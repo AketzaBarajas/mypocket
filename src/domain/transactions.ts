@@ -39,7 +39,7 @@ export interface TransactionInput {
 export type TransactionField =
   "amount" | "accountId" | "toAccountId" | "categoryId" | "originalCurrency";
 
-export type TransactionErrors = Partial<Record<TransactionField, string>>;
+export type TransactionErrors = Readonly<Partial<Record<TransactionField, string | undefined>>>;
 
 /**
  * Valida un movimiento: importe > 0, categoría hoja del mismo tipo salvo en
@@ -50,7 +50,7 @@ export const validateTransaction = (
   index: CategoryIndex,
   accountIds: ReadonlySet<AccountId>,
 ): TransactionErrors => {
-  const errors: TransactionErrors = {};
+  const errors: Partial<Record<TransactionField, string>> = {};
 
   if (input.amount === null || input.amount <= 0) {
     errors.amount = "Escribe un importe mayor que cero.";
@@ -88,7 +88,8 @@ export const validateTransaction = (
   return errors;
 };
 
-export const hasErrors = (errors: TransactionErrors): boolean => Object.keys(errors).length > 0;
+export const hasErrors = (errors: TransactionErrors): boolean =>
+  Object.values(errors).some((message) => message !== undefined);
 
 /** Limpia los campos que no aplican al tipo antes de guardar. */
 export const sanitizeTransaction = (input: TransactionInput): TransactionInput => {

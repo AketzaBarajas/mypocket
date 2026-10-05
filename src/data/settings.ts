@@ -42,6 +42,9 @@ const isSettingKey = (key: string): key is SettingKey => key in settingSchemas;
 export const encodeSetting = <K extends SettingKey>(key: K, value: Settings[K]): string =>
   JSON.stringify(settingSchemas[key].parse(value));
 
+// Aunque el tipo diga lo contrario, una fila recién escrita puede llegar sin marcas de tiempo.
+const stamp = (value: string | null): string => value ?? "";
+
 /** Construye los ajustes a partir de las filas, con valores por defecto. */
 export const toSettings = (rows: ReadonlyArray<SettingRow>): Settings => {
   const settings: Settings = { ...DEFAULT_SETTINGS };
@@ -51,7 +54,7 @@ export const toSettings = (rows: ReadonlyArray<SettingRow>): Settings => {
   };
 
   // Si dos dispositivos crearon la misma clave, gana la editada más tarde.
-  const ordered = [...rows].sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+  const ordered = [...rows].sort((a, b) => stamp(a.updatedAt).localeCompare(stamp(b.updatedAt)));
   for (const row of ordered) {
     if (row.key === null || row.value === null || !isSettingKey(row.key)) continue;
     try {

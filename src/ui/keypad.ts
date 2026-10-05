@@ -45,3 +45,16 @@ export const keypadKeyFromEvent = (eventKey: string): KeypadKey | null => {
   if (eventKey === "Backspace") return "backspace";
   return null;
 };
+
+/**
+ * Limpia un importe escrito con el teclado físico: solo dígitos y una coma,
+ * con dos decimales como máximo y sin ceros a la izquierda.
+ */
+export const sanitizeAmountText = (text: string): string => {
+  let result = "";
+  for (const char of text) {
+    const key = keypadKeyFromEvent(char);
+    if (key !== null && key !== "backspace") result = applyKeypadKey(result, key);
+  }
+  return result;
+};

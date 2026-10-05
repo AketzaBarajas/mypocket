@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AccountDetailPage } from "@/features/accounts/AccountDetailPage";
 import { RouteError } from "@/features/shell/RouteError";
-import { EmptyState, PageHeader } from "@/ui";
 
 export const Route = createFileRoute("/_app/cuentas/$id")({
   component: CuentaPage,
@@ -9,10 +9,6 @@ export const Route = createFileRoute("/_app/cuentas/$id")({
 });
 
 function CuentaPage() {
-  return (
-    <>
-      <PageHeader title="Cuenta" />
-      <EmptyState icon="💳" title="Detalle de la cuenta" />
-    </>
-  );
+  const { id } = Route.useParams();
+  return <AccountDetailPage id={id} />;
 }

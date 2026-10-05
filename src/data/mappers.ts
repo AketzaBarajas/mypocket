@@ -51,6 +51,12 @@ const date = (value: string | null): IsoDate | null =>
 const month = (value: string | null): YearMonth | null =>
   value !== null && isYearMonth(value) ? value : null;
 
+/**
+ * Marca de tiempo de sistema. El tipo de Evolu la da por presente, pero una
+ * fila recién escrita puede llegar sin ella; se trata como la más antigua.
+ */
+const stamp = (value: string | null): string => value ?? "";
+
 const bool = (value: 0 | 1 | null, fallback: boolean): boolean =>
   value === null ? fallback : value === 1;
 
@@ -115,7 +121,7 @@ export const toTransaction = (row: TransactionRow): Transaction | null => {
     importBatchId: row.importBatchId,
     importHash: row.importHash,
     isDeleted: row.isDeleted === 1,
-    createdAt: row.createdAt,
+    createdAt: stamp(row.createdAt),
   };
 };
 
@@ -171,7 +177,7 @@ export const toBudget = (row: BudgetRow): Budget | null => {
     categoryId: row.scope === "category" ? row.categoryId : null,
     amount: row.amount === null ? null : cents(row.amount),
     validFrom,
-    updatedAt: row.updatedAt,
+    updatedAt: stamp(row.updatedAt),
   };
 };
 
@@ -197,7 +203,7 @@ export const toValuation = (row: ValuationRow): AccountValuation | null => {
     date: valuationDate,
     value: cents(row.value),
     note: row.note,
-    createdAt: row.createdAt,
+    createdAt: stamp(row.createdAt),
   };
 };
 
@@ -210,7 +216,7 @@ export const toRule = (row: RuleRow): CategorizationRule | null => {
     categoryId: row.categoryId,
     priority: row.priority ?? 0,
     hitCount: row.hitCount ?? 0,
-    createdAt: row.createdAt,
+    createdAt: stamp(row.createdAt),
   };
 };
 

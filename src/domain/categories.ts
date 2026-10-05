@@ -61,12 +61,15 @@ export const topLevelCategories = (
       (options.includeArchived === true || !category.archived),
   );
 
-/** Hojas asignables de un tipo, sin las archivadas ni las hijas de madres archivadas. */
+/**
+ * Hojas asignables de un tipo, en el orden del catálogo (cada categoría de
+ * primer nivel seguida de sus hijas). Excluye las archivadas y las hijas de
+ * madres archivadas.
+ */
 export const leafCategories = (index: CategoryIndex, kind: CategoryKind): ReadonlyArray<Category> =>
-  index.all.filter((category) => {
-    if (category.kind !== kind || category.archived || !isLeaf(index, category.id)) return false;
-    const parent = parentOf(index, category);
-    return !parent?.archived;
+  topLevelCategories(index, kind).flatMap((top) => {
+    const children = childrenOfCategory(index, top.id);
+    return children.length === 0 ? [top] : children.filter((child) => !child.archived);
   });
 
 /** Grupo 50/30/20 de una categoría: el de su categoría de primer nivel. */

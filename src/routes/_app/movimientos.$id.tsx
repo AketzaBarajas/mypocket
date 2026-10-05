@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { RouteError } from "@/features/shell/RouteError";
-import { EmptyState, PageHeader } from "@/ui";
+import { TransactionEditPage } from "@/features/transactions/TransactionEditPage";
 
 export const Route = createFileRoute("/_app/movimientos/$id")({
   component: MovimientoPage,
@@ -9,10 +9,6 @@ export const Route = createFileRoute("/_app/movimientos/$id")({
 });
 
 function MovimientoPage() {
-  return (
-    <>
-      <PageHeader title="Movimiento" />
-      <EmptyState icon="✏️" title="Edición del movimiento" />
-    </>
-  );
+  const { id } = Route.useParams();
+  return <TransactionEditPage id={id} />;
 }

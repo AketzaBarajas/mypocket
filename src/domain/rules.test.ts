@@ -176,9 +176,9 @@ describe("categorías", () => {
     expect(isLeaf(tree.index, "gifts")).toBe(true);
     expect(isLeaf(tree.index, "nope")).toBe(false);
     expect(leafCategories(tree.index, "expense").map((category) => category.id)).toEqual([
-      "rent",
       "supermarket",
       "market",
+      "rent",
       "leisure",
       "gifts",
     ]);

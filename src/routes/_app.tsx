@@ -1,7 +1,8 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
+import { AppFrame } from "@/features/shell/AppFrame";
 import { AppShell } from "@/features/shell/AppShell";
-import { DataBoundary } from "@/features/shell/DataBoundary";
+import { DataBoundary, ScreenSkeleton } from "@/features/shell/DataBoundary";
 import { RouteError } from "@/features/shell/RouteError";
 
 export const Route = createFileRoute("/_app")({
@@ -9,16 +10,19 @@ export const Route = createFileRoute("/_app")({
   errorComponent: RouteError,
 });
 
+const noop = () => undefined;
+
 function AppLayout() {
-  const navigate = useNavigate();
   return (
-    <AppShell
-      pendingCount={0}
-      onAdd={() => void navigate({ to: ".", search: (prev) => ({ ...prev, nuevo: "gasto" }) })}
+    <DataBoundary
+      // El shell se pinta ya durante la carga: no hay saltos de layout al llegar los datos.
+      fallback={
+        <AppShell pendingCount={0} onAdd={noop}>
+          <ScreenSkeleton />
+        </AppShell>
+      }
     >
-      <DataBoundary>
-        <Outlet />
-      </DataBoundary>
-    </AppShell>
+      <AppFrame />
+    </DataBoundary>
   );
 }

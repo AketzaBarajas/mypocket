@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { applyKeypadKey, KEYPAD_KEYS, keypadKeyFromEvent, type KeypadKey } from "./keypad";
+import {
+  applyKeypadKey,
+  KEYPAD_KEYS,
+  keypadKeyFromEvent,
+  sanitizeAmountText,
+  type KeypadKey,
+} from "./keypad";
 
 const type = (keys: ReadonlyArray<KeypadKey>, start = ""): string =>
   keys.reduce((text, key) => applyKeypadKey(text, key), start);
@@ -53,5 +59,16 @@ describe("teclado numérico", () => {
     expect(keypadKeyFromEvent("Backspace")).toBe("backspace");
     expect(keypadKeyFromEvent("a")).toBeNull();
     expect(keypadKeyFromEvent("Enter")).toBeNull();
+  });
+});
+
+describe("importe escrito con teclado físico", () => {
+  it("normaliza el punto a coma y descarta lo que no es un importe", () => {
+    expect(sanitizeAmountText("12.5")).toBe("12,5");
+    expect(sanitizeAmountText("12,345")).toBe("12,34");
+    expect(sanitizeAmountText("1a2b,5€")).toBe("12,5");
+    expect(sanitizeAmountText("007")).toBe("7");
+    expect(sanitizeAmountText("1,2,3")).toBe("1,23");
+    expect(sanitizeAmountText("")).toBe("");
   });
 });

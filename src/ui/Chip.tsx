@@ -3,7 +3,8 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "./cn";
 
 export interface ChipProps extends ComponentProps<"button"> {
-  readonly selected?: boolean;
+  /** Chip conmutable: al indicarlo se anuncia como botón pulsado o no. */
+  readonly selected?: boolean | undefined;
   readonly leading?: ReactNode;
   readonly trailing?: ReactNode;
   readonly size?: "sm" | "md";
@@ -11,7 +12,7 @@ export interface ChipProps extends ComponentProps<"button"> {
 
 /** Píldora interactiva de radio 8: filtros, cuenta, fecha, «+ Más». */
 export const Chip = ({
-  selected = false,
+  selected,
   leading,
   trailing,
   size = "md",
@@ -23,6 +24,7 @@ export const Chip = ({
   <button
     type={type ?? "button"}
     aria-pressed={props.role == null ? selected : undefined}
+    data-selected={selected === true || undefined}
     className={cn(
       "hit-44 inline-flex shrink-0 items-center gap-1.5 rounded-chip border text-caption font-semibold whitespace-nowrap transition-colors select-none disabled:pointer-events-none disabled:opacity-40",
       size === "md" ? "h-9 px-3" : "h-7 px-2",
