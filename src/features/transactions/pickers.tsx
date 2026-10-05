@@ -3,7 +3,12 @@ import { Popover } from "radix-ui";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { useLedger, useRepo } from "@/data";
-import { leafCategories, parentOf } from "@/domain/categories";
+import {
+  childrenOfCategory,
+  leafCategories,
+  parentOf,
+  topLevelCategories,
+} from "@/domain/categories";
 import { mostUsedCategories } from "@/domain/transactions";
 import type { Account, Category, CategoryKind, Tag } from "@/domain/types";
 import { BottomSheet, Chip, cn, Combobox, Menu, type ComboboxOption } from "@/ui";
@@ -244,4 +249,23 @@ export const TagPicker = ({ value, onChange }: TagPickerProps) => {
       </Popover.Root>
     </div>
   );
+};
+
+/** Categorías hoja de un tipo agrupadas por su madre, para un desplegable. */
+export const useCategoryGroups = (kind: CategoryKind | null) => {
+  const { index } = useLedger();
+  return useMemo(() => {
+    if (kind === null) return [];
+    return topLevelCategories(index, kind).map((top) => {
+      const children = childrenOfCategory(index, top.id).filter((child) => !child.archived);
+      return {
+        label: `${top.emoji} ${top.name}`,
+        options: (children.length === 0 ? [top] : children).map((category) => ({
+          value: category.id,
+          label: category.name,
+          emoji: category.emoji,
+        })),
+      };
+    });
+  }, [index, kind]);
 };

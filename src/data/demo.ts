@@ -308,6 +308,29 @@ export const seedDemo = (repo: Repo, today: IsoDate): void => {
   recurring("Gimnasio Basic-Fit", 34.9, 4, "deporte/gimnasio", true);
   recurring("Netflix", 13.99, 12, "suscripciones/streaming", true);
   recurring("Spotify", 10.99, 20, "suscripciones/streaming", true);
+  // Dos cargos dentro del plazo de aviso, para que «Por aprobar» tenga contenido:
+  // uno que vence en dos días y otro que venció ayer.
+  const soon = (name: string, amount: number, date: IsoDate, category: string) =>
+    repo.createRecurrence({
+      name,
+      type: "expense",
+      amount: eur(amount),
+      accountId: bank,
+      toAccountId: null,
+      categoryId: cat(category),
+      concept: name,
+      frequency: "monthly",
+      interval: 1,
+      anchorDate: date,
+      nextDueDate: date,
+      endDate: null,
+      leadDays: 3,
+      isSubscription: false,
+      active: true,
+    });
+  soon("Seguro dental", 18.5, addDaysIso(today, 2), "salud/seguro");
+  soon("Clases de inglés", 60, addDaysIso(today, -1), "formacion/cursos");
+
   repo.createRecurrence({
     name: "Amazon Prime",
     type: "expense",

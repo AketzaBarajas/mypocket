@@ -48,8 +48,10 @@ export interface ChartTableProps {
 
 /** Alternativa textual de una gráfica, visible solo para lectores de pantalla. */
 export const ChartTable = ({ caption, headers, rows }: ChartTableProps) => (
-  <table className="sr-only">
-    <caption>{caption}</caption>
+  // El envoltorio lleva `sr-only`: una tabla no respeta el ancho de 1 px y desbordaría.
+  <div className="sr-only">
+    <table>
+      <caption>{caption}</caption>
     <thead>
       <tr>
         {headers.map((header) => (
@@ -74,7 +76,8 @@ export const ChartTable = ({ caption, headers, rows }: ChartTableProps) => (
         </tr>
       ))}
     </tbody>
-  </table>
+    </table>
+  </div>
 );
 
 /** Tarjeta flotante de tooltip: --surface-raised con borde. */

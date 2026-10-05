@@ -1,18 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
+import { isYearMonth } from "@/domain/dates";
+import type { YearMonth } from "@/domain/types";
+import { PLAN_TABS, PlanPage } from "@/features/plan/PlanPage";
 import { RouteError } from "@/features/shell/RouteError";
-import { EmptyState, PageHeader } from "@/ui";
+
+const planSearch = z.object({
+  pestana: z.enum(PLAN_TABS).optional().catch(undefined),
+  mes: z
+    .custom<YearMonth>((value) => typeof value === "string" && isYearMonth(value))
+    .optional()
+    .catch(undefined),
+});
 
 export const Route = createFileRoute("/_app/plan")({
-  component: PlanPage,
+  validateSearch: planSearch,
+  component: PlanRoute,
   errorComponent: RouteError,
 });
 
-function PlanPage() {
+function PlanRoute() {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   return (
-    <>
-      <PageHeader title="Plan" />
-      <EmptyState icon="🎯" title="Presupuestos, metas y recurrentes" />
-    </>
+    <PlanPage
+      tab={search.pestana ?? "presupuestos"}
+      month={search.mes}
+      onTabChange={(pestana) =>
+        void navigate({ search: (prev) => ({ ...prev, pestana }), replace: true })
+      }
+      onMonthChange={(mes) => void navigate({ search: (prev) => ({ ...prev, mes }), replace: true })}
+    />
   );
 }

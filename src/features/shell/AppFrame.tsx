@@ -61,8 +61,9 @@ const useRecurrenceRunner = () => {
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
-    // También al cambiar de día con la app abierta.
-  }, [today]);
+    // También al cambiar de día y cuando cambian las recurrencias (una nueva, o
+    // las que llegan por sincronización). Es idempotente: repetirlo no duplica.
+  }, [today, recurrences]);
 };
 
 /** Marco de la app con datos: shell, alta rápida global y tareas de primer plano. */

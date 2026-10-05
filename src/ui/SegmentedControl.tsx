@@ -78,7 +78,7 @@ export const SegmentedControl = <T extends string>({
             tabIndex={selected ? 0 : -1}
             onClick={() => onValueChange(option.value)}
             className={cn(
-              "relative z-0 inline-flex min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-3 font-semibold transition-colors",
+              "relative z-0 inline-flex min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-2 font-semibold transition-colors",
               size === "md" ? "h-10 text-body" : "h-8 text-caption",
               selected ? "text-fg" : "text-fg-2 hover:text-fg",
             )}
