@@ -155,6 +155,8 @@ export interface Budget {
   /** `null` significa «sin presupuesto a partir de ese mes». */
   readonly amount: Cents | null;
   readonly validFrom: YearMonth;
+  /** Marca de última edición ISO 8601: desempata versiones duplicadas del mismo mes. */
+  readonly updatedAt: string;
 }
 
 export const GOAL_STATUSES = ["active", "achieved", "archived"] as const;

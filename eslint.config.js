@@ -45,6 +45,8 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": ["error", { fixStyle: "inline-type-imports" }],
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/array-type": "off",
+      // Los importes son números con marca (Cents) y la regla no los reconoce como número.
+      "@typescript-eslint/no-unsafe-unary-minus": "off",
       "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
       "@typescript-eslint/no-misused-promises": [
         "error",
