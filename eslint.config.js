@@ -37,6 +37,8 @@ export default tseslint.config(
       // Prohibido registrar nada en consola: podría filtrar datos financieros.
       "no-console": "error",
       eqeqeq: ["error", "always", { null: "ignore" }],
+      // Los tipos de Node solo existen para los tests: la app corre en el navegador.
+      "no-restricted-globals": ["error", "process", "Buffer", "require", "__dirname", "__filename"],
 
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/ban-ts-comment": "error",
@@ -106,12 +108,14 @@ export default tseslint.config(
     files: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**"],
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
+      "no-restricted-globals": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
     },
   },
   {
     files: ["*.config.js", "*.config.ts", "scripts/**", "e2e/**"],
     languageOptions: { globals: { ...globals.node } },
+    rules: { "no-restricted-globals": "off" },
   },
   {
     // Herramientas de Node: se validan con tsconfig.node.json, no con reglas con tipos.

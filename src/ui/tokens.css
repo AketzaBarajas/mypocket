@@ -1,0 +1,114 @@
+/*
+ * Tokens del sistema «Obsidian».
+ *
+ * El tema sigue a `prefers-color-scheme` y se puede fijar con `[data-theme]`
+ * en <html> o en cualquier contenedor (la galería /dev/ui lo usa para mostrar
+ * ambos temas a la vez). Los valores oscuros son los de :root; los claros se
+ * declaran dos veces (media query y atributo) porque CSS no permite reutilizar
+ * un bloque.
+ * `src/ui/tokens.test.ts` lee este archivo y verifica el contraste WCAG AA.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #09090b;
+  --surface: #131316;
+  --surface-raised: #111114;
+  --chip: #1a1a1e;
+  --key: #16161a;
+  --border: #26262b;
+  --border-strong: #303036;
+  --text: #fafafa;
+  --text-2: #9b9ba4;
+  --text-3: #5c5c66;
+  --accent: #3df5a7;
+  --on-accent: #04120b;
+  --accent-soft: rgba(61, 245, 167, 0.1);
+  --warning: #f5b83d;
+  --danger: #ff5c5c;
+  --track: #222227;
+  --scrim: rgba(0, 0, 0, 0.62);
+
+  /* Sin sombras en modo oscuro. */
+  --shadow-raised: none;
+
+  /* Paleta sobria de 8 colores para cuentas, etiquetas y metas. */
+  --pal-slate: #9ba3b4;
+  --pal-blue: #7aa7f0;
+  --pal-teal: #5cc8c0;
+  --pal-olive: #a8b86a;
+  --pal-amber: #d9a85c;
+  --pal-coral: #e58a76;
+  --pal-rose: #d987a8;
+  --pal-violet: #a995e8;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --bg: #f6f6f7;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --chip: #f4f4f5;
+    --key: #f4f4f5;
+    --border: #e4e4e7;
+    --border-strong: #d4d4d8;
+    --text: #0a0a0b;
+    --text-2: #5f5f68;
+    --text-3: #9a9aa3;
+    --accent: #0a7f51;
+    --on-accent: #ffffff;
+    --accent-soft: rgba(10, 127, 81, 0.08);
+    --warning: #9a5b00;
+    --danger: #d12f2f;
+    --track: #ececef;
+    --scrim: rgba(10, 10, 11, 0.3);
+
+    --shadow-raised: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+    --pal-slate: #55607a;
+    --pal-blue: #2f5fb8;
+    --pal-teal: #0f6f6a;
+    --pal-olive: #5b6a1e;
+    --pal-amber: #8a5a0a;
+    --pal-coral: #a8452e;
+    --pal-rose: #a33a68;
+    --pal-violet: #5e48b8;
+  }
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f6f6f7;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --chip: #f4f4f5;
+  --key: #f4f4f5;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text: #0a0a0b;
+  --text-2: #5f5f68;
+  --text-3: #9a9aa3;
+  --accent: #0a7f51;
+  --on-accent: #ffffff;
+  --accent-soft: rgba(10, 127, 81, 0.08);
+  --warning: #9a5b00;
+  --danger: #d12f2f;
+  --track: #ececef;
+  --scrim: rgba(10, 10, 11, 0.3);
+
+  --shadow-raised: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  --pal-slate: #55607a;
+  --pal-blue: #2f5fb8;
+  --pal-teal: #0f6f6a;
+  --pal-olive: #5b6a1e;
+  --pal-amber: #8a5a0a;
+  --pal-coral: #a8452e;
+  --pal-rose: #a33a68;
+  --pal-violet: #5e48b8;
+}

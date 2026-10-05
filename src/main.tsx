@@ -4,6 +4,8 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import { applyTheme, getStoredTheme } from "@/ui/theme";
+
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
@@ -17,6 +19,8 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+
+applyTheme(getStoredTheme());
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Falta el elemento #root en index.html.");

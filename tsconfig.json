@@ -5,7 +5,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": ["vite/client", "vite-plugin-pwa/react"],
+    // "node" solo lo usan los tests; ESLint impide usar globales de Node en la app.
+    "types": ["vite/client", "vite-plugin-pwa/react", "node"],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,

@@ -9,50 +9,309 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as BienvenidaRouteImport } from './routes/bienvenida'
+import { Route as LockRouteImport } from './routes/lock'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppAjustesRouteImport } from './routes/_app/ajustes'
+import { Route as AppAnalisisRouteImport } from './routes/_app/analisis'
+import { Route as AppImportarRouteImport } from './routes/_app/importar'
+import { Route as AppPlanRouteImport } from './routes/_app/plan'
+import { Route as DevUiRouteImport } from './routes/dev.ui'
+import { Route as AppCuentasIndexRouteImport } from './routes/_app/cuentas.index'
+import { Route as AppCuentasIdRouteImport } from './routes/_app/cuentas.$id'
+import { Route as AppMovimientosIndexRouteImport } from './routes/_app/movimientos.index'
+import { Route as AppMovimientosIdRouteImport } from './routes/_app/movimientos.$id'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BienvenidaRoute = BienvenidaRouteImport.update({
+  id: '/bienvenida',
+  path: '/bienvenida',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LockRoute = LockRouteImport.update({
+  id: '/lock',
+  path: '/lock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAjustesRoute = AppAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnalisisRoute = AppAnalisisRouteImport.update({
+  id: '/analisis',
+  path: '/analisis',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImportarRoute = AppImportarRouteImport.update({
+  id: '/importar',
+  path: '/importar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => AppRoute,
+} as any)
+const DevUiRoute = DevUiRouteImport.update({
+  id: '/dev/ui',
+  path: '/dev/ui',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppCuentasIndexRoute = AppCuentasIndexRouteImport.update({
+  id: '/cuentas/',
+  path: '/cuentas/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCuentasIdRoute = AppCuentasIdRouteImport.update({
+  id: '/cuentas/$id',
+  path: '/cuentas/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMovimientosIndexRoute = AppMovimientosIndexRouteImport.update({
+  id: '/movimientos/',
+  path: '/movimientos/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMovimientosIdRoute = AppMovimientosIdRouteImport.update({
+  id: '/movimientos/$id',
+  path: '/movimientos/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/bienvenida': typeof BienvenidaRoute
+  '/lock': typeof LockRoute
+  '/ajustes': typeof AppAjustesRoute
+  '/analisis': typeof AppAnalisisRoute
+  '/importar': typeof AppImportarRoute
+  '/plan': typeof AppPlanRoute
+  '/dev/ui': typeof DevUiRoute
+  '/cuentas/$id': typeof AppCuentasIdRoute
+  '/movimientos/$id': typeof AppMovimientosIdRoute
+  '/cuentas/': typeof AppCuentasIndexRoute
+  '/movimientos/': typeof AppMovimientosIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/bienvenida': typeof BienvenidaRoute
+  '/lock': typeof LockRoute
+  '/ajustes': typeof AppAjustesRoute
+  '/analisis': typeof AppAnalisisRoute
+  '/importar': typeof AppImportarRoute
+  '/plan': typeof AppPlanRoute
+  '/dev/ui': typeof DevUiRoute
+  '/': typeof AppIndexRoute
+  '/cuentas/$id': typeof AppCuentasIdRoute
+  '/movimientos/$id': typeof AppMovimientosIdRoute
+  '/cuentas': typeof AppCuentasIndexRoute
+  '/movimientos': typeof AppMovimientosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/bienvenida': typeof BienvenidaRoute
+  '/lock': typeof LockRoute
+  '/_app/ajustes': typeof AppAjustesRoute
+  '/_app/analisis': typeof AppAnalisisRoute
+  '/_app/importar': typeof AppImportarRoute
+  '/_app/plan': typeof AppPlanRoute
+  '/dev/ui': typeof DevUiRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/cuentas/$id': typeof AppCuentasIdRoute
+  '/_app/movimientos/$id': typeof AppMovimientosIdRoute
+  '/_app/cuentas/': typeof AppCuentasIndexRoute
+  '/_app/movimientos/': typeof AppMovimientosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/bienvenida'
+    | '/lock'
+    | '/ajustes'
+    | '/analisis'
+    | '/importar'
+    | '/plan'
+    | '/dev/ui'
+    | '/cuentas/$id'
+    | '/movimientos/$id'
+    | '/cuentas/'
+    | '/movimientos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/bienvenida'
+    | '/lock'
+    | '/ajustes'
+    | '/analisis'
+    | '/importar'
+    | '/plan'
+    | '/dev/ui'
+    | '/'
+    | '/cuentas/$id'
+    | '/movimientos/$id'
+    | '/cuentas'
+    | '/movimientos'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/bienvenida'
+    | '/lock'
+    | '/_app/ajustes'
+    | '/_app/analisis'
+    | '/_app/importar'
+    | '/_app/plan'
+    | '/dev/ui'
+    | '/_app/'
+    | '/_app/cuentas/$id'
+    | '/_app/movimientos/$id'
+    | '/_app/cuentas/'
+    | '/_app/movimientos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  BienvenidaRoute: typeof BienvenidaRoute
+  LockRoute: typeof LockRoute
+  DevUiRoute: typeof DevUiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bienvenida': {
+      id: '/bienvenida'
+      path: '/bienvenida'
+      fullPath: '/bienvenida'
+      preLoaderRoute: typeof BienvenidaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lock': {
+      id: '/lock'
+      path: '/lock'
+      fullPath: '/lock'
+      preLoaderRoute: typeof LockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ajustes': {
+      id: '/_app/ajustes'
+      path: '/ajustes'
+      fullPath: '/ajustes'
+      preLoaderRoute: typeof AppAjustesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/analisis': {
+      id: '/_app/analisis'
+      path: '/analisis'
+      fullPath: '/analisis'
+      preLoaderRoute: typeof AppAnalisisRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/importar': {
+      id: '/_app/importar'
+      path: '/importar'
+      fullPath: '/importar'
+      preLoaderRoute: typeof AppImportarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/plan': {
+      id: '/_app/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/dev/ui': {
+      id: '/dev/ui'
+      path: '/dev/ui'
+      fullPath: '/dev/ui'
+      preLoaderRoute: typeof DevUiRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/cuentas/': {
+      id: '/_app/cuentas/'
+      path: '/cuentas'
+      fullPath: '/cuentas/'
+      preLoaderRoute: typeof AppCuentasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cuentas/$id': {
+      id: '/_app/cuentas/$id'
+      path: '/cuentas/$id'
+      fullPath: '/cuentas/$id'
+      preLoaderRoute: typeof AppCuentasIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/movimientos/': {
+      id: '/_app/movimientos/'
+      path: '/movimientos'
+      fullPath: '/movimientos/'
+      preLoaderRoute: typeof AppMovimientosIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/movimientos/$id': {
+      id: '/_app/movimientos/$id'
+      path: '/movimientos/$id'
+      fullPath: '/movimientos/$id'
+      preLoaderRoute: typeof AppMovimientosIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppAjustesRoute: typeof AppAjustesRoute
+  AppAnalisisRoute: typeof AppAnalisisRoute
+  AppImportarRoute: typeof AppImportarRoute
+  AppPlanRoute: typeof AppPlanRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppCuentasIdRoute: typeof AppCuentasIdRoute
+  AppMovimientosIdRoute: typeof AppMovimientosIdRoute
+  AppCuentasIndexRoute: typeof AppCuentasIndexRoute
+  AppMovimientosIndexRoute: typeof AppMovimientosIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAjustesRoute: AppAjustesRoute,
+  AppAnalisisRoute: AppAnalisisRoute,
+  AppImportarRoute: AppImportarRoute,
+  AppPlanRoute: AppPlanRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppCuentasIdRoute: AppCuentasIdRoute,
+  AppMovimientosIdRoute: AppMovimientosIdRoute,
+  AppCuentasIndexRoute: AppCuentasIndexRoute,
+  AppMovimientosIndexRoute: AppMovimientosIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  BienvenidaRoute: BienvenidaRoute,
+  LockRoute: LockRoute,
+  DevUiRoute: DevUiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
