@@ -1,0 +1,11 @@
+dist
+dev-dist
+coverage
+.vite
+node_modules
+pnpm-lock.yaml
+playwright-report
+test-results
+src/routeTree.gen.ts
+docs/PROMPT.md
+public
