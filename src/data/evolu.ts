@@ -4,12 +4,12 @@ import {
   createEvolu,
   createQueryBuilder,
   type Evolu,
-  type OwnerSecret,
 } from "@evolu/common";
 import { createEvoluBinding } from "@evolu/react";
 import { createEvoluDeps } from "@evolu/react-web";
 import { createRun } from "@evolu/web";
 
+import { toOwnerSecret } from "./owner";
 import { Schema } from "./schema";
 
 /** Instancia de Evolu tipada con el schema de MyPocket. */
@@ -28,7 +28,8 @@ const createSharedRun = () => createRun(createEvoluDeps());
 const getRun = () => (sharedRun ??= createSharedRun());
 
 export interface OpenDbOptions {
-  readonly ownerSecret: OwnerSecret;
+  /** Secreto del owner en bytes (16 bytes: frase de 12 palabras). */
+  readonly ownerSecret: Uint8Array;
   /** URL `wss://` del relay. `null` desactiva la sincronización. */
   readonly relayUrl: string | null;
   /** Nombre de la base local. Cambia solo para el perfil demo aislado. */
@@ -43,7 +44,7 @@ export const openDb = (options: OpenDbOptions): Promise<Db> =>
   getRun().ok(
     createEvolu(Schema, {
       appName: AppName.orThrow(options.appName ?? "mypocket"),
-      appOwner: createAppOwner(options.ownerSecret),
+      appOwner: createAppOwner(toOwnerSecret(options.ownerSecret)),
       transports: options.relayUrl === null ? [] : [{ type: "WebSocket", url: options.relayUrl }],
       indexes: (create) => [
         create("transactionDate").on("transaction").column("date"),

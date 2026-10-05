@@ -17,6 +17,9 @@ importers:
       '@evolu/react-web':
         specifier: 3.2.0
         version: 3.2.0(@evolu/common@8.18.0)(@evolu/web@3.4.1(@evolu/common@8.18.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@evolu/sqlite-wasm':
+        specifier: 2.2.4
+        version: 2.2.4
       '@evolu/web':
         specifier: 3.4.1
         version: 3.4.1(@evolu/common@8.18.0)
@@ -68,6 +71,9 @@ importers:
       date-fns:
         specifier: 4.4.0
         version: 4.4.0
+      kysely:
+        specifier: 0.29.6
+        version: 0.29.6
       lucide-react:
         specifier: 1.52.0
         version: 1.52.0(@types/react@19.3.0)(react@19.3.0)

@@ -362,5 +362,4 @@ export const seedDemo = (repo: Repo, today: IsoDate): void => {
 
   repo.setSetting("defaultAccountId", bank);
   repo.setSetting("lastAccountId", bank);
-  repo.setSetting("onboardingDone", true);
 };

@@ -2,6 +2,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { RouteError, RouteNotFound } from "@/features/shell/RouteError";
+import { SessionGate } from "@/features/shell/SessionGate";
 import { ToastViewport, TooltipProvider } from "@/ui";
 
 /** Tipos de alta rápida que se pueden abrir con `?nuevo=` desde cualquier ruta. */
@@ -22,7 +23,9 @@ export const Route = createRootRoute({
 function RootLayout() {
   return (
     <TooltipProvider>
-      <Outlet />
+      <SessionGate>
+        <Outlet />
+      </SessionGate>
       <ToastViewport />
     </TooltipProvider>
   );

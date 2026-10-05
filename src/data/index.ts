@@ -2,6 +2,13 @@
 // queda aislado dentro de src/data y es reemplazable.
 export { closeDb, type Db, DEFAULT_RELAY_URL, openDb, type OpenDbOptions } from "./evolu";
 export * from "./hooks";
+export {
+  generateOwnerSecret,
+  MNEMONIC_WORDS,
+  mnemonicToSecret,
+  normalizeMnemonic,
+  secretToMnemonic,
+} from "./owner";
 export { DataProvider, type LedgerValue, useLedger, useRepo } from "./LedgerProvider";
 export {
   type AccountInput,
@@ -13,7 +20,10 @@ export {
   type Repo,
   type RuleInput,
   type SeedAccountInput,
+  seedAccountId,
+  seedCategoryId,
 } from "./repo";
+export { seedDemo } from "./demo";
 export {
   AUTO_LOCK_OPTIONS,
   type AutoLockMinutes,

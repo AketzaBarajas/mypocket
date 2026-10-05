@@ -1,16 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { RouteError } from "@/features/shell/RouteError";
+import { Welcome } from "@/features/welcome/Welcome";
 
 export const Route = createFileRoute("/bienvenida")({
-  component: BienvenidaPage,
+  component: WelcomePage,
   errorComponent: RouteError,
 });
 
-function BienvenidaPage() {
-  return (
-    <main className="flex min-h-dvh items-center justify-center">
-      <h1 className="text-h1">Bienvenida</h1>
-    </main>
-  );
+function WelcomePage() {
+  return <Welcome />;
 }

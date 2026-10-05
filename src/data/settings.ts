@@ -18,7 +18,6 @@ const settingSchemas = {
   lastIncomeCategoryId: nullableId,
   theme: z.enum(["system", "light", "dark"]),
   autoLockMinutes: z.union([z.literal(1), z.literal(5), z.literal(15)]),
-  onboardingDone: z.boolean(),
 } as const;
 
 export type SettingKey = keyof typeof settingSchemas;
@@ -33,7 +32,6 @@ export const DEFAULT_SETTINGS: Settings = {
   lastIncomeCategoryId: null,
   theme: "system",
   autoLockMinutes: 5,
-  onboardingDone: false,
 };
 
 export const SETTING_KEYS = Object.keys(settingSchemas) as ReadonlyArray<SettingKey>;

@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 
 import { AppShell } from "@/features/shell/AppShell";
+import { DataBoundary } from "@/features/shell/DataBoundary";
 import { RouteError } from "@/features/shell/RouteError";
 
 export const Route = createFileRoute("/_app")({
@@ -15,7 +16,9 @@ function AppLayout() {
       pendingCount={0}
       onAdd={() => void navigate({ to: ".", search: (prev) => ({ ...prev, nuevo: "gasto" }) })}
     >
-      <Outlet />
+      <DataBoundary>
+        <Outlet />
+      </DataBoundary>
     </AppShell>
   );
 }
