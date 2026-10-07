@@ -16,6 +16,7 @@ import {
   Card,
   CashflowBars,
   CashflowLegend,
+  Checkbox,
   Chip,
   Combobox,
   ConfirmDialog,
@@ -176,6 +177,12 @@ const Controls = () => {
       <div className="flex items-center gap-3">
         <Switch checked={checked} onCheckedChange={setChecked} label="Incluir en el patrimonio" />
         <span className="text-body text-fg-2">Incluir en el patrimonio</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <Checkbox checked={checked} onCheckedChange={setChecked} label="Importar la fila" />
+        <Checkbox checked="indeterminate" onCheckedChange={setChecked} label="Selección parcial" />
+        <Checkbox checked={false} disabled onCheckedChange={setChecked} label="Fila con error" />
+        <span className="text-body text-fg-2">Casilla: marcada, parcial y desactivada</span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

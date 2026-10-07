@@ -59,6 +59,12 @@ export interface PreviewRow {
   readonly unknownAccount: string | null;
   readonly unknownToAccount: string | null;
   readonly unknownCategory: string | null;
+  /**
+   * Tipo y cuenta tal como salieron del archivo, antes de cualquier edición.
+   * Identifican la fila de origen: el hash se calcula con ellos.
+   */
+  readonly sourceType: TransactionType;
+  readonly sourceAccountId: AccountId | null;
   readonly importHash: string | null;
 }
 
@@ -196,6 +202,8 @@ export const buildRows = (
       unknownAccount: account === undefined ? accountName : null,
       unknownToAccount: type === "transfer" && toAccount === undefined ? toAccountName : null,
       unknownCategory,
+      sourceType: type,
+      sourceAccountId: accountId,
       importHash: null,
     };
   });
@@ -245,7 +253,7 @@ export const patchRow = (row: PreviewRow, patch: RowPatch): PreviewRow => {
     status: error !== null ? "error" : row.status === "error" ? "new" : row.status,
     include:
       error !== null ? false : (patch.include ?? (row.status === "error" ? true : row.include)),
-    // El hash depende de tipo y cuenta: hay que recalcularlo.
+    // Una edición puede cambiar el estado de la fila: el hash se vuelve a resolver.
     importHash: null,
   };
 };
@@ -263,6 +271,11 @@ export const sha256Hex = async (text: string): Promise<string> =>
  * donde la ocurrencia es el índice de repetición de la misma combinación dentro
  * del archivo: dos cafés idénticos el mismo día son dos movimientos distintos.
  * Una fila cuyo hash ya existe queda como «duplicada» y desmarcada por defecto.
+ *
+ * Tipo y cuenta son los que traía el archivo, no los editados en la vista
+ * previa: si un gasto se importó como transferencia, o se movió a otra cuenta,
+ * al reimportar el archivo se sigue reconociendo. Solo cuando el archivo no
+ * daba cuenta (ni había una por defecto) se usa la elegida a mano.
  */
 export const resolveDuplicates = async (
   rows: ReadonlyArray<PreviewRow>,
@@ -279,9 +292,13 @@ export const resolveDuplicates = async (
       ) {
         return { ...row, importHash: null };
       }
-      const base = [row.date, row.amount, row.type, normalizeText(row.concept), row.accountId].join(
-        "|",
-      );
+      const base = [
+        row.date,
+        row.amount,
+        row.sourceType,
+        normalizeText(row.concept),
+        row.sourceAccountId ?? row.accountId,
+      ].join("|");
       const occurrence = occurrences.get(base) ?? 0;
       occurrences.set(base, occurrence + 1);
       const importHash = await sha256Hex(`${base}|${occurrence}`);

@@ -137,7 +137,11 @@ export const Welcome = ({ connectDrive }: WelcomeProps) => {
 
   const finish = async (destination: "/" | "/importar") => {
     await finishOnboarding();
-    await navigate({ to: destination, replace: true });
+    await navigate(
+      destination === "/importar"
+        ? { to: "/importar", search: { perfil: "notion-pagos" }, replace: true }
+        : { to: "/", replace: true },
+    );
   };
 
   const handleDrive = async () => {

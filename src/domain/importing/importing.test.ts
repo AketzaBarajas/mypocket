@@ -540,6 +540,41 @@ describe("pipeline de importación", () => {
       expect(later.map((row) => row.status)).toEqual(["duplicate", "duplicate", "new"]);
     });
 
+    it("editar el tipo o la cuenta en la vista previa no cambia el hash", async () => {
+      const first = await resolveDuplicates(buildRows(records, signed, context), new Set());
+      const edited = await resolveDuplicates(
+        first.map((row, index) =>
+          index === 0
+            ? patchRow(row, { type: "transfer", toAccountId: "cash" })
+            : index === 2
+              ? patchRow(row, { accountId: "cash" })
+              : row,
+        ),
+        new Set(),
+      );
+      expect(edited[0]).toMatchObject({ type: "transfer", sourceType: "expense" });
+      expect(edited[0]?.importHash).toBe(first[0]?.importHash);
+      expect(edited[2]).toMatchObject({ accountId: "cash", sourceAccountId: "bank" });
+      expect(edited[2]?.importHash).toBe(first[2]?.importHash);
+
+      // Al reimportar el mismo archivo, las filas editadas siguen siendo duplicadas.
+      const existing = new Set(
+        edited.flatMap((row) => (row.importHash === null ? [] : [row.importHash])),
+      );
+      const again = await resolveDuplicates(buildRows(records, signed, context), existing);
+      expect(again.filter((row) => row.status === "new")).toEqual([]);
+    });
+
+    it("sin cuenta en el archivo, el hash usa la elegida a mano", async () => {
+      const noAccount = { ...signed, defaultAccountId: null };
+      const [row] = buildRows(records.slice(0, 1), noAccount, context);
+      expect(row).toMatchObject({ status: "error", sourceAccountId: null });
+      const [fixed] = await resolveDuplicates([patchRow(row!, { accountId: "cash" })], new Set());
+      expect(fixed?.importHash).toBe(
+        await sha256Hex("2026-10-05|4385|expense|mercadona madrid|cash|0"),
+      );
+    });
+
     it("respeta la casilla que marcó el usuario al recalcular", async () => {
       const rows = await resolveDuplicates(buildRows(records, signed, context), new Set());
       const unchecked = rows.map((row, index) => (index === 0 ? { ...row, include: false } : row));

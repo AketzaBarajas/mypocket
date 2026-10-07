@@ -6,6 +6,7 @@ export * from "./charts/AreaLineChart";
 export * from "./charts/BarLists";
 export * from "./charts/CashflowBars";
 export * from "./charts/Sparkline";
+export * from "./Checkbox";
 export * from "./Chip";
 export * from "./cn";
 export * from "./Combobox";

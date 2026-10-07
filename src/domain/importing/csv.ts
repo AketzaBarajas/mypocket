@@ -35,13 +35,46 @@ export class CsvError extends Error {
   }
 }
 
+const DELIMITERS = [";", ",", "\t", "|"] as const;
+
+/**
+ * Deduce el separador de columnas. La detección de Papa Parse falla con los
+ * extractos que empiezan con líneas de título y usan coma decimal: la coma
+ * aparece las mismas veces en cada fila de datos y parece un separador. Aquí
+ * gana el candidato que da más columnas en más filas; sin ninguno claro
+ * devuelve "" y decide Papa Parse.
+ */
+export const detectDelimiter = (text: string): string => {
+  let best = "";
+  let bestScore = 0;
+  for (const delimiter of DELIMITERS) {
+    const sample = Papa.parse<string[]>(text, {
+      delimiter,
+      header: false,
+      preview: 50,
+      skipEmptyLines: "greedy",
+    });
+    const linesByWidth = new Map<number, number>();
+    for (const row of sample.data) {
+      if (row.length > 1) linesByWidth.set(row.length, (linesByWidth.get(row.length) ?? 0) + 1);
+    }
+    let score = 0;
+    for (const [width, lines] of linesByWidth) score = Math.max(score, lines * (width - 1));
+    if (score > bestScore) {
+      best = delimiter;
+      bestScore = score;
+    }
+  }
+  return best;
+};
+
 /** Parsea un CSV a una matriz de celdas. `delimiter` vacío lo detecta solo. */
 export const parseCsv = (text: string, delimiter = ""): CsvMatrix => {
   const result = Papa.parse<string[]>(text, {
-    delimiter,
+    delimiter: delimiter === "" ? detectDelimiter(text) : delimiter,
     header: false,
     skipEmptyLines: "greedy",
-    delimitersToGuess: [";", ",", "\t", "|"],
+    delimitersToGuess: [...DELIMITERS],
   });
   const rows = result.data
     .map((row) => row.map((cell) => cell.trim()))

@@ -1,12 +1,13 @@
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { ArrowDown, ArrowUp, Check, Ellipsis, Pencil, SkipForward, Trash2 } from "lucide-react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { useLedger } from "@/data";
 import { formatDayHeader, formatNumericDate } from "@/domain/dates";
 import { formatMoney } from "@/domain/money";
 import { groupByDay } from "@/domain/transactions";
 import type { Cents, IsoDate, Transaction } from "@/domain/types";
+import { useScrollMargin } from "@/features/shared/useScrollMargin";
 import { useToday } from "@/features/shell/useToday";
 import {
   Badge,
@@ -50,20 +51,6 @@ const menuActions = (transaction: Transaction, actions: TransactionActions): Men
     onSelect: () => actions.remove(transaction),
   },
 ];
-
-/** Mide la distancia de un elemento al inicio del documento, para el virtualizador. */
-const useScrollMargin = (ref: React.RefObject<HTMLElement | null>): number => {
-  const [margin, setMargin] = useState(0);
-  useLayoutEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    const measure = () => setMargin(element.getBoundingClientRect().top + window.scrollY);
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [ref]);
-  return margin;
-};
 
 /* ───────────────────────── Lista agrupada (móvil y tablet) ───────────────────────── */
 

@@ -127,3 +127,56 @@ se fija a `Europe/Madrid` en `vitest.config.ts`.
 - `src/domain` no puede importar React, Evolu ni la UI, ni usar `new Date()` o `Date.now()`.
 - `src/ui`, `src/features` y `src/routes` no pueden importar `@evolu/*`.
 - `no-console` es un error en todo el código.
+
+## 4. Importación (fase 7)
+
+### 4.1 El hash identifica la fila del archivo, no el movimiento final
+
+El prompt define `importHash = SHA-256(date|amount|tipo|conceptoNormalizado|accountId|ocurrencia)`.
+Se calcula con el tipo y la cuenta **tal como salen del archivo** (`sourceType`, `sourceAccountId`),
+no con los que queden tras editar la fila en la vista previa. Con los valores editados, un gasto
+importado como transferencia (el traspaso mensual al bróker, por ejemplo) aparecía como «nuevo» al
+reimportar el mismo extracto y se podía duplicar. Solo cuando el archivo no da cuenta, ni hay una
+por defecto, entra en el hash la cuenta elegida a mano.
+
+### 4.2 Detección propia del separador
+
+Papa Parse elige la coma como separador en los extractos que empiezan con líneas de título y usan
+coma decimal (la coma se repite igual en cada fila de datos). `detectDelimiter` prueba `;`, `,`,
+tabulador y `|` y se queda con el que da más columnas en más filas; si ninguno destaca, decide
+Papa Parse.
+
+### 4.3 Perfiles guardados
+
+El modelo de `importProfile` no guarda de qué perfil preconfigurado procede ni su tipo por defecto,
+así que no hay perfiles con nombre libre: al confirmar una importación (interruptor «Recordar estas
+columnas», activado por defecto) se guarda un `importProfile` con el nombre del perfil
+preconfigurado, y la siguiente vez que se elige ese perfil se recupera su mapeo para las columnas
+que sigan existiendo en el archivo.
+
+### 4.4 Incluir y seleccionar son cosas distintas
+
+En la vista previa, la casilla de cada fila decide si se importa. La edición masiva usa una
+selección aparte (clic en la fila, Mayús + clic para un rango, barra espaciadora con el teclado, o
+«Seleccionar las N visibles» tras filtrar o buscar): así se puede categorizar un grupo de filas sin
+tocar qué se importa.
+
+### 4.5 Cuentas y categorías creadas desde la vista previa
+
+- Una cuenta desconocida se crea como cuenta corriente, con saldo inicial 0 y fecha de apertura en
+  su primer movimiento del archivo, para que todos cuenten en el saldo. El tipo se cambia después en
+  Cuentas.
+- Una categoría desconocida se crea de primer nivel, con 🏷️; en las de gasto se elige el grupo
+  (Necesidades o Deseos) al crearla.
+
+### 4.6 Movimientos anteriores a la apertura de la cuenta
+
+El saldo de una cuenta solo suma movimientos desde su fecha de apertura (el saldo inicial ya incluye
+lo anterior). Al migrar el histórico de Notion es normal importar movimientos más antiguos: se
+guardan y cuentan en el análisis, y el paso de confirmación avisa de cuántos no cambian el saldo.
+
+### 4.7 Límites
+
+- Archivos de hasta 10 MB; el CSV se lee en memoria y nunca sale del dispositivo.
+- Fecha e importe no se editan en la vista previa: si se leen mal, se corrige el mapeo (formato de
+  fecha, separador decimal) en el paso anterior.
