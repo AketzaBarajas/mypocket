@@ -20,6 +20,7 @@ import type { Cents } from "@/domain/types";
 import { netWorthChange, netWorthSeries, type SeriesRange } from "@/domain/networthSeries";
 import { cashflowOf, monthlyCashflow, monthRangeOf } from "@/domain/spending";
 import { compareNewestFirst, pendingTransactions } from "@/domain/transactions";
+import { BackupReminder } from "@/features/home/BackupReminder";
 import { GroupTile } from "@/features/plan/GroupTile";
 import { RangeTabs } from "@/features/shared/RangeTabs";
 import { SyncIndicator } from "@/features/shell/StatusFooter";
@@ -362,6 +363,8 @@ export const HomePage = () => {
           Nuevo movimiento
         </Button>
       </header>
+
+      {hasData && <BackupReminder className="mb-3" />}
 
       {/*
         Bento. El orden del DOM es el de escritorio (12 columnas); en móvil y

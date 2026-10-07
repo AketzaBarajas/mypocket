@@ -24,6 +24,9 @@ export {
   seedCategoryId,
 } from "./repo";
 export { seedDemo } from "./demo";
+export { SCHEMA_VERSION } from "./schema";
+export { type RestoreResult, type Snapshot, snapshotRowCount } from "./snapshot";
+export { exportSnapshot, restoreSnapshot } from "./snapshotDb";
 export {
   AUTO_LOCK_OPTIONS,
   type AutoLockMinutes,

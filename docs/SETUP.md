@@ -66,6 +66,9 @@ navegador y Windows Hello lo permiten, la passkey.
    - Tipo de aplicación: **Aplicación web**.
    - **Orígenes autorizados de JavaScript**: `http://localhost:5173` y tu dominio de producción
      (por ejemplo `https://mypocket.pages.dev`).
+   - **URI de redireccionamiento autorizados**: los mismos orígenes seguidos de `/oauth.html`, es
+     decir, `http://localhost:5173/oauth.html` y `https://mypocket.pages.dev/oauth.html`. Tienen
+     que coincidir carácter a carácter: sin barra final y con `https` en producción.
 5. Copia el **ID de cliente** en `.env.local`:
 
    ```dotenv
@@ -80,6 +83,12 @@ así, `.env.local` está en `.gitignore` para que cada entorno tenga el suyo.
 
 En modo «Testing», Google solo deja entrar a los usuarios de prueba que hayas añadido. Es justo lo
 que quieres para una app de un solo usuario.
+
+MyPocket no carga ningún script de Google. Al pulsar «Hacer copia» abre una ventana de Google
+para pedir permiso; Google vuelve a `/oauth.html`, una página estática de la propia app, que le
+entrega un permiso de una hora limitado a la carpeta oculta de MyPocket en tu Drive. Por eso hace
+falta el URI de redireccionamiento, y por eso el navegador debe permitir las ventanas emergentes
+de MyPocket. Si Google responde `redirect_uri_mismatch`, revisa que el URI del paso 4 sea exacto.
 
 ## 5. Desplegar en Cloudflare Pages
 
@@ -109,8 +118,8 @@ La primera vez, `wrangler` abre el navegador para iniciar sesión en Cloudflare.
 
 ### Después de desplegar
 
-- Añade la URL de producción a los **Orígenes autorizados de JavaScript** del cliente OAuth
-  (paso 4).
+- Añade la URL de producción a los **Orígenes autorizados de JavaScript** del cliente OAuth y su
+  `/oauth.html` a los **URI de redireccionamiento autorizados** (paso 4).
 - **La passkey queda ligada al dominio.** Si cambias de dominio (por ejemplo, de
   `mypocket.pages.dev` a un dominio propio), la passkey antigua deja de servir y tendrás que
   registrar una nueva en Ajustes → Seguridad. El PIN sigue funcionando, y tus datos también: se

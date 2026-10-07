@@ -1,18 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
+import { SETTINGS_SECTIONS, SettingsPage } from "@/features/settings/SettingsPage";
 import { RouteError } from "@/features/shell/RouteError";
-import { EmptyState, PageHeader } from "@/ui";
+
+const settingsSearch = z.object({
+  seccion: z.enum(SETTINGS_SECTIONS).optional().catch(undefined),
+});
 
 export const Route = createFileRoute("/_app/ajustes")({
-  component: AjustesPage,
+  validateSearch: settingsSearch,
+  component: AjustesRoute,
   errorComponent: RouteError,
 });
 
-function AjustesPage() {
-  return (
-    <>
-      <PageHeader title="Ajustes" />
-      <EmptyState icon="⚙️" title="Preferencias y seguridad" />
-    </>
-  );
+function AjustesRoute() {
+  const { seccion } = Route.useSearch();
+  return <SettingsPage section={seccion} />;
 }

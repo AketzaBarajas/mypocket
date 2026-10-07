@@ -28,7 +28,8 @@ const cspPlugin = (relayOrigins: ReadonlyArray<string>): Plugin => ({
         "style-src 'self' 'unsafe-inline'",
         "font-src 'self'",
         "img-src 'self' data: blob:",
-        `connect-src 'self' ${relayOrigins.join(" ")} https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com`,
+        // Drive se usa solo por su API REST; el permiso se pide en una ventana aparte.
+        `connect-src 'self' ${relayOrigins.join(" ")} https://www.googleapis.com`,
         "manifest-src 'self'",
         "object-src 'none'",
         "base-uri 'self'",

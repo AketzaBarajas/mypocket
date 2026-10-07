@@ -180,3 +180,63 @@ guardan y cuentan en el análisis, y el paso de confirmación avisa de cuántos 
 - Archivos de hasta 10 MB; el CSV se lee en memoria y nunca sale del dispositivo.
 - Fecha e importe no se editan en la vista previa: si se leen mal, se corrige el mapeo (formato de
   fecha, separador decimal) en el paso anterior.
+
+## 5. Copias, sincronización y ajustes (fase 8)
+
+### 5.1 Permiso de Google sin Google Identity Services
+
+El prompt pide «Google Identity Services con un token client» y, a la vez, una CSP con scripts solo
+desde `'self'` y ningún CDN en ejecución. Las dos cosas no caben: GIS solo existe como script
+remoto de `accounts.google.com` y Google no permite autoalojarlo. Consultado con el autor
+(7 de octubre de 2026), se eligió hacer a mano el mismo flujo implícito de OAuth 2.0:
+
+- `requestDriveToken` abre una ventana a `accounts.google.com/o/oauth2/v2/auth` con
+  `response_type=token`, el scope `drive.appdata` y un `state` aleatorio.
+- Google vuelve a `/oauth.html` (`public/oauth.html` + `public/oauth.js`), una página estática del
+  mismo origen que entrega el fragmento a la app por `postMessage` y por un `BroadcastChannel` (por
+  si Google corta la relación entre ventanas con COOP) y se cierra.
+- La app comprueba el `state`, guarda el token solo en memoria y lo descarta al bloquear.
+
+Consecuencias: ningún script de terceros corre junto a los datos descifrados; `connect-src` se
+reduce a `https://www.googleapis.com` (ya no hacen falta `accounts.google.com` ni
+`oauth2.googleapis.com`); el cliente OAuth necesita `<origen>/oauth.html` como URI de
+redireccionamiento autorizado (`docs/SETUP.md`, paso 4); y `@types/google.accounts` deja de usarse.
+
+Sin verificar: el flujo real contra Google (hace falta un ID de cliente) y, en particular, que en
+el iPhone la ventana de Google vuelva a la PWA instalada. Si fallara, la alternativa es el mismo
+flujo con redirección de página completa.
+
+### 5.2 Formato de la copia
+
+Un JSON con encabezado en claro (`format`, `version`, `schemaVersion`, `createdAt`, `compression`,
+`iv`) y `ciphertext`: la instantánea de las 13 tablas, comprimida con gzip (`CompressionStream`) y
+cifrada con AES-GCM 256. La clave sale del secreto del owner con HKDF-SHA256 e
+`info = "mypocket/backup/v1"`. La instantánea incluye los borrados lógicos y solo las columnas del
+schema.
+
+### 5.3 Restaurar es escribir encima, no reemplazar la base
+
+Evolu 8 no permite borrar la base (1.3) ni fijar `createdAt`/`updatedAt`. Restaurar hace un
+`upsert` de cada fila de la copia con su id:
+
+- Lo que está en la copia vuelve a su valor de entonces, también en los demás dispositivos (es una
+  escritura CRDT más). Lo creado después de la copia se conserva.
+- Las filas restauradas reciben marcas de tiempo nuevas. Solo afecta a los desempates que usan
+  `createdAt` (reglas con igual prioridad y especificidad, orden dentro de un mismo día).
+- Cada fila se valida con los tipos del schema antes de escribirse; las que no pasan se omiten y
+  se cuentan.
+- Se acepta cualquier frase válida que abra la copia, no solo la del dispositivo: sirve para
+  recuperar datos de un owner anterior.
+
+Restaurar en un perfil limpio: bienvenida → «Restaurar con mi frase» → Ajustes → Copias → restaurar
+(o esperar a que llegue todo del relay).
+
+### 5.4 Ajustes
+
+- En escritorio, índice a la izquierda y sección a la derecha; en móvil y tablet el índice es la
+  pantalla y cada sección se abre aparte (`/ajustes?seccion=…`).
+- Cambiar el PIN pide primero el nuevo (dos veces) y al final la passkey o el PIN actual: así la
+  identidad se verifica una sola vez.
+- El tema se aplica al instante en el dispositivo y además se guarda como ajuste sincronizado.
+- El aviso «Copia de seguridad pendiente» de Inicio solo aparece si esta compilación tiene ID de
+  cliente de Google, hay conexión y hay datos que copiar.
