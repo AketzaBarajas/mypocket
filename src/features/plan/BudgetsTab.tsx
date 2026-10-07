@@ -12,7 +12,12 @@ import {
 } from "@/domain/budgets";
 import { childrenOfCategory } from "@/domain/categories";
 import { addMonthsYm, formatMonthName } from "@/domain/dates";
-import { type CategoryBudgetLine, GROUP_LABELS, type GroupSummary, planSummary } from "@/domain/groups";
+import {
+  type CategoryBudgetLine,
+  GROUP_LABELS,
+  type GroupSummary,
+  planSummary,
+} from "@/domain/groups";
 import { formatMoney, formatPercent, ZERO_CENTS } from "@/domain/money";
 import { monthRangeOf, spendingByCategory } from "@/domain/spending";
 import type { Cents, YearMonth } from "@/domain/types";
@@ -60,7 +65,11 @@ const BudgetForm = ({
 
   const children = useMemo(() => {
     if (editing.categoryId === null) return [];
-    const byLeaf = spendingByCategory(ledger.transactions, ledger.index, monthRangeOf(month)).byLeaf;
+    const byLeaf = spendingByCategory(
+      ledger.transactions,
+      ledger.index,
+      monthRangeOf(month),
+    ).byLeaf;
     return childrenOfCategory(ledger.index, editing.categoryId).map((child) => ({
       child,
       spent: byLeaf.get(child.id) ?? ZERO_CENTS,
@@ -91,9 +100,10 @@ const BudgetForm = ({
       <div className="flex items-center gap-3">
         <EmojiChip emoji={editing.emoji} size="lg" />
         <div className="min-w-0">
-          <div className="text-body text-fg truncate">{editing.title}</div>
+          <div className="truncate text-body text-fg">{editing.title}</div>
           <div className="text-caption text-fg-2">
-            {isSavings ? "Aportado" : "Gastado"} en {formatMonthName(month)}: {formatMoney(editing.spent)}
+            {isSavings ? "Aportado" : "Gastado"} en {formatMonthName(month)}:{" "}
+            {formatMoney(editing.spent)}
           </div>
         </div>
       </div>
@@ -102,7 +112,15 @@ const BudgetForm = ({
         label={isSavings ? "Objetivo de ahorro mensual" : "Presupuesto mensual"}
         hint="Déjalo vacío para no tener presupuesto."
       >
-        {(aria) => <MoneyInput value={amount} onValueChange={setAmount} placeholder="Sin presupuesto" autoFocus {...aria} />}
+        {(aria) => (
+          <MoneyInput
+            value={amount}
+            onValueChange={setAmount}
+            placeholder="Sin presupuesto"
+            autoFocus
+            {...aria}
+          />
+        )}
       </Field>
 
       <SegmentedControl
@@ -114,7 +132,7 @@ const BudgetForm = ({
           { value: "onlyThisMonth", label: "Solo este mes" },
         ]}
       />
-      <p className="text-caption text-fg-2 -mt-2">
+      <p className="-mt-2 text-caption text-fg-2">
         {mode === "fromThisMonth"
           ? `Se aplica a ${formatMonthName(month)} y a los meses siguientes.`
           : `Solo cambia ${formatMonthName(month)}; ${formatMonthName(addMonthsYm(month, 1))} vuelve al importe anterior.`}
@@ -123,10 +141,10 @@ const BudgetForm = ({
       {children.length > 0 && (
         <section className="flex flex-col gap-1">
           <h3 className="text-caption text-fg-2">Subcategorías este mes</h3>
-          <ul className="border-border divide-border divide-y rounded-[12px] border">
+          <ul className="divide-y divide-border rounded-[12px] border border-border">
             {children.map(({ child, spent }) => (
               <li key={child.id} className="flex h-11 items-center justify-between gap-3 px-3">
-                <span className="text-body text-fg truncate">{child.name}</span>
+                <span className="truncate text-body text-fg">{child.name}</span>
                 <Money value={spent} className="text-body text-fg-2" />
               </li>
             ))}
@@ -158,13 +176,13 @@ const CategoryLine = ({
   <button
     type="button"
     onClick={onEdit}
-    className="hover:bg-chip flex w-full min-w-0 items-center gap-3 px-4 py-3 text-left transition-colors"
+    className="flex w-full min-w-0 items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-chip"
   >
     <EmojiChip emoji={line.category.emoji} />
     <span className="min-w-0 flex-1">
       <span className="flex min-w-0 items-baseline gap-2">
-        <span className="text-body text-fg min-w-0 flex-1 truncate">{line.category.name}</span>
-        <span className={cn("num text-caption shrink-0", STATE_TEXT[line.status.state])}>
+        <span className="min-w-0 flex-1 truncate text-body text-fg">{line.category.name}</span>
+        <span className={cn("shrink-0 num text-caption", STATE_TEXT[line.status.state])}>
           {line.status.state === "danger"
             ? `+${formatMoney(line.status.excess)}`
             : line.status.ratio === null
@@ -178,11 +196,11 @@ const CategoryLine = ({
         state={line.budget === null ? "neutral" : line.status.state}
         label={`${line.category.name}: ${spentOfBudget(line.spent, line.budget)}`}
       />
-      <span className="num text-caption text-fg-2 mt-1 block truncate">
+      <span className="mt-1 block truncate num text-caption text-fg-2">
         {spentOfBudget(line.spent, line.budget)}
       </span>
     </span>
-    <ChevronRight aria-hidden="true" size={16} strokeWidth={1.75} className="text-fg-3 shrink-0" />
+    <ChevronRight aria-hidden="true" size={16} strokeWidth={1.75} className="shrink-0 text-fg-3" />
   </button>
 );
 
@@ -198,22 +216,22 @@ const GroupSection = ({
     <section aria-label={name}>
       {/* El borde del grupo toma el color de su peor categoría. */}
       <Card padding="none" tone={STATE_TONE[summary.worstState]} className="overflow-hidden">
-        <header className="border-border flex items-center gap-3 border-b px-4 py-3">
+        <header className="flex items-center gap-3 border-b border-border px-4 py-3">
           <span aria-hidden="true" className="text-[18px]">
             {emoji}
           </span>
           <div className="min-w-0 flex-1">
             <h2 className="text-title text-fg">{name}</h2>
-            <p className="num text-caption text-fg-2 truncate">
+            <p className="truncate num text-caption text-fg-2">
               {spentOfBudget(summary.spent, summary.budget)}
               {summary.ideal !== null && ` · ideal ${formatMoney(summary.ideal, { whole: true })}`}
             </p>
           </div>
-          <span className={cn("num text-title shrink-0", STATE_TEXT[summary.status.state])}>
+          <span className={cn("shrink-0 num text-title", STATE_TEXT[summary.status.state])}>
             {summary.status.ratio === null ? "—" : formatPercent(summary.status.ratio)}
           </span>
         </header>
-        <ul className="divide-border divide-y">
+        <ul className="divide-y divide-border">
           {summary.lines.map((line) => (
             <li key={line.category.id}>
               <CategoryLine
@@ -264,7 +282,7 @@ export const BudgetsTab = ({
         <Card padding="none" className="overflow-hidden">
           <button
             type="button"
-            className="hover:bg-chip flex w-full items-center gap-3 px-4 py-3 text-left transition-colors"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-chip"
             onClick={() =>
               setEditing({
                 key: SAVINGS_KEY,
@@ -281,8 +299,8 @@ export const BudgetsTab = ({
             </span>
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-2">
-                <span className="text-title text-fg min-w-0 flex-1">{savingsLabel.name}</span>
-                <span className="num text-title text-fg-2 shrink-0">
+                <span className="min-w-0 flex-1 text-title text-fg">{savingsLabel.name}</span>
+                <span className="shrink-0 num text-title text-fg-2">
                   {savings.status.ratio === null ? "—" : formatPercent(savings.status.ratio)}
                 </span>
               </span>
@@ -292,16 +310,24 @@ export const BudgetsTab = ({
                 state="ok"
                 label={`Ahorro: aportado ${formatMoney(savings.spent)}${savingsBudget === null ? "" : ` de ${formatMoney(savingsBudget)}`}`}
               />
-              <span className="num text-caption text-fg-2 mt-1 block truncate">
+              <span className="mt-1 block truncate num text-caption text-fg-2">
                 Aportado {formatMoney(savings.spent, { whole: true })}
-                {savingsBudget === null ? " · sin objetivo" : ` / ${formatMoney(savingsBudget, { whole: true })}`}
-                {savings.ideal !== null && ` · ideal ${formatMoney(savings.ideal, { whole: true })}`}
+                {savingsBudget === null
+                  ? " · sin objetivo"
+                  : ` / ${formatMoney(savingsBudget, { whole: true })}`}
+                {savings.ideal !== null &&
+                  ` · ideal ${formatMoney(savings.ideal, { whole: true })}`}
               </span>
             </span>
-            <ChevronRight aria-hidden="true" size={16} strokeWidth={1.75} className="text-fg-3 shrink-0" />
+            <ChevronRight
+              aria-hidden="true"
+              size={16}
+              strokeWidth={1.75}
+              className="shrink-0 text-fg-3"
+            />
           </button>
         </Card>
-        <p className="text-caption text-fg-2 mt-2 px-1">
+        <p className="mt-2 px-1 text-caption text-fg-2">
           El ahorro cuenta las transferencias del mes hacia cuentas de ahorro o inversión, menos lo
           que retires de ellas.
         </p>

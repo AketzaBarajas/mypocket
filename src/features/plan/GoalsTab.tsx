@@ -41,11 +41,19 @@ const goalSchema = z.object({
     .number({ error: "Escribe cuánto quieres reunir." })
     .int()
     .positive("Escribe cuánto quieres reunir."),
-  targetDate: z.custom<IsoDate>((value) => typeof value === "string" && isIsoDate(value)).nullable(),
+  targetDate: z
+    .custom<IsoDate>((value) => typeof value === "string" && isIsoDate(value))
+    .nullable(),
 });
 type GoalValues = z.infer<typeof goalSchema>;
 
-const GoalForm = ({ goal, onDone }: { readonly goal: Goal | null; readonly onDone: () => void }) => {
+const GoalForm = ({
+  goal,
+  onDone,
+}: {
+  readonly goal: Goal | null;
+  readonly onDone: () => void;
+}) => {
   const repo = useRepo();
   const today = useToday();
   const {
@@ -78,10 +86,19 @@ const GoalForm = ({ goal, onDone }: { readonly goal: Goal | null; readonly onDon
     <form noValidate onSubmit={(event) => void save(event)} className="flex flex-col gap-4 pt-2">
       <div className="grid grid-cols-[4.5rem_1fr] gap-3">
         <Field label="Emoji" error={errors.emoji?.message}>
-          {(aria) => <Input className="text-center" maxLength={16} {...register("emoji")} {...aria} />}
+          {(aria) => (
+            <Input className="text-center" maxLength={16} {...register("emoji")} {...aria} />
+          )}
         </Field>
         <Field label="Nombre" error={errors.name?.message}>
-          {(aria) => <Input maxLength={60} placeholder="Fondo de emergencia" {...register("name")} {...aria} />}
+          {(aria) => (
+            <Input
+              maxLength={60}
+              placeholder="Fondo de emergencia"
+              {...register("name")}
+              {...aria}
+            />
+          )}
         </Field>
       </div>
       <Field label="Objetivo" error={errors.targetAmount?.message}>
@@ -100,14 +117,22 @@ const GoalForm = ({ goal, onDone }: { readonly goal: Goal | null; readonly onDon
           />
         )}
       </Field>
-      <Field label="Fecha objetivo" hint="Opcional. Con fecha, verás cuánto necesitas aportar al mes.">
+      <Field
+        label="Fecha objetivo"
+        hint="Opcional. Con fecha, verás cuánto necesitas aportar al mes."
+      >
         {(aria) => (
           <Controller
             control={control}
             name="targetDate"
             render={({ field }) => (
               <div className="flex items-center gap-2">
-                <DatePicker value={field.value ?? today} onChange={field.onChange} today={today} min={today}>
+                <DatePicker
+                  value={field.value ?? today}
+                  onChange={field.onChange}
+                  today={today}
+                  min={today}
+                >
                   <Chip id={aria.id} className="h-11 flex-1 justify-start">
                     {field.value === null ? "Sin fecha" : formatShortDate(field.value)}
                   </Chip>
@@ -137,7 +162,13 @@ const GoalForm = ({ goal, onDone }: { readonly goal: Goal | null; readonly onDon
   );
 };
 
-const GoalCard = ({ progress, onOpen }: { readonly progress: GoalProgress; readonly onOpen: () => void }) => {
+const GoalCard = ({
+  progress,
+  onOpen,
+}: {
+  readonly progress: GoalProgress;
+  readonly onOpen: () => void;
+}) => {
   const { goal } = progress;
   return (
     <Card asChild interactive>
@@ -145,18 +176,22 @@ const GoalCard = ({ progress, onOpen }: { readonly progress: GoalProgress; reado
         <span className="flex min-w-0 items-center gap-3">
           <EmojiChip emoji={goal.emoji} />
           <span className="min-w-0 flex-1">
-            <span className="text-body text-fg flex items-center gap-2">
+            <span className="flex items-center gap-2 text-body text-fg">
               <span className="truncate">{goal.name}</span>
               <ColorDot color={goal.color} />
             </span>
-            <span className="text-caption text-fg-2 block truncate">
-              {goal.targetDate === null ? "Sin fecha objetivo" : `Para el ${formatShortDate(goal.targetDate)}`}
+            <span className="block truncate text-caption text-fg-2">
+              {goal.targetDate === null
+                ? "Sin fecha objetivo"
+                : `Para el ${formatShortDate(goal.targetDate)}`}
             </span>
           </span>
           {goal.status === "achieved" ? (
             <Badge tone="accent">Conseguida</Badge>
           ) : (
-            <span className="num text-title text-fg shrink-0">{formatPercent(Math.max(0, progress.ratio))}</span>
+            <span className="shrink-0 num text-title text-fg">
+              {formatPercent(Math.max(0, progress.ratio))}
+            </span>
           )}
         </span>
         <ProgressBar
@@ -169,7 +204,7 @@ const GoalCard = ({ progress, onOpen }: { readonly progress: GoalProgress; reado
             {formatMoney(progress.progress)} de {formatMoney(goal.targetAmount)}
           </span>
           {progress.monthlyNeeded !== null && (
-            <span className="num text-caption text-fg shrink-0">
+            <span className="shrink-0 num text-caption text-fg">
               necesitas {formatMoney(progress.monthlyNeeded, { whole: true })}/mes
             </span>
           )}
@@ -254,17 +289,20 @@ const GoalDetail = ({
             en «Más».
           </p>
         ) : (
-          <ul className="border-border divide-border divide-y rounded-[12px] border">
+          <ul className="divide-y divide-border rounded-[12px] border border-border">
             {progress.contributions.map(({ transaction, amount }) => (
               <li key={transaction.id} className="flex min-h-12 items-center gap-3 px-3 py-2">
                 <div className="min-w-0 flex-1">
                   <div className="num text-body text-fg">{formatShortDate(transaction.date)}</div>
-                  <div className="text-caption text-fg-2 truncate">
+                  <div className="truncate text-caption text-fg-2">
                     {accountById.get(transaction.accountId)?.name ?? "Cuenta"} →{" "}
                     {accountById.get(transaction.toAccountId ?? "")?.name ?? "Cuenta"}
                   </div>
                 </div>
-                <RowAmount amount={cents(Math.abs(amount))} kind={amount >= 0 ? "income" : "expense"} />
+                <RowAmount
+                  amount={cents(Math.abs(amount))}
+                  kind={amount >= 0 ? "income" : "expense"}
+                />
               </li>
             ))}
           </ul>
@@ -332,7 +370,8 @@ export const GoalsTab = () => {
   const [showArchived, setShowArchived] = useState(false);
 
   const all = useMemo(
-    () => ledger.goals.map((goal) => goalProgress(goal, ledger.transactions, ledger.accounts, today)),
+    () =>
+      ledger.goals.map((goal) => goalProgress(goal, ledger.transactions, ledger.accounts, today)),
     [ledger.goals, ledger.transactions, ledger.accounts, today],
   );
   const visible = all.filter((item) => item.goal.status !== "archived");
@@ -365,7 +404,11 @@ export const GoalsTab = () => {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {visible.map((progress) => (
-            <GoalCard key={progress.goal.id} progress={progress} onOpen={() => setOpenId(progress.goal.id)} />
+            <GoalCard
+              key={progress.goal.id}
+              progress={progress}
+              onOpen={() => setOpenId(progress.goal.id)}
+            />
           ))}
         </div>
       )}
@@ -383,7 +426,11 @@ export const GoalsTab = () => {
           {showArchived && (
             <div className="grid gap-3 sm:grid-cols-2">
               {archived.map((progress) => (
-                <GoalCard key={progress.goal.id} progress={progress} onOpen={() => setOpenId(progress.goal.id)} />
+                <GoalCard
+                  key={progress.goal.id}
+                  progress={progress}
+                  onOpen={() => setOpenId(progress.goal.id)}
+                />
               ))}
             </div>
           )}

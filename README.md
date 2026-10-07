@@ -35,6 +35,7 @@ pnpm dev
 | `pnpm test:e2e`      | Tests de extremo a extremo (Playwright).                        |
 | `pnpm seed:demo`     | Arranca un perfil demo aislado con 12 meses de datos ficticios. |
 | `pnpm icons`         | Regenera los iconos de la PWA.                                  |
+| `pnpm check:bundle`  | Comprueba, tras el build, el presupuesto de JS inicial.         |
 
 ## Arquitectura
 

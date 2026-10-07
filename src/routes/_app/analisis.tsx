@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { isYearMonth } from "@/domain/dates";
 import type { YearMonth } from "@/domain/types";
-import { ANALYSIS_TABS, AnalysisPage, PERIODS } from "@/features/analysis/AnalysisPage";
+import { AnalysisPage } from "@/features/analysis/AnalysisPage";
+import { ANALYSIS_TABS, PERIODS } from "@/features/analysis/params";
 import { RouteError } from "@/features/shell/RouteError";
 
 const analysisSearch = z.object({
@@ -29,7 +30,9 @@ function AnalisisRoute() {
       tab={search.pestana ?? "patrimonio"}
       period={search.periodo ?? "mes"}
       month={search.mes}
-      onChange={(patch) => void navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true })}
+      onChange={(patch) =>
+        void navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true })
+      }
     />
   );
 }

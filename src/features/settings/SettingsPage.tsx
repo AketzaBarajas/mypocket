@@ -29,23 +29,9 @@ import {
 } from "./GeneralSections";
 import { RulesSection } from "./RulesSection";
 import { SecuritySection } from "./SecuritySection";
+import { SETTINGS_SECTIONS, type SettingsSectionKey } from "./sections";
 import { SyncSection } from "./SyncSection";
 import { TagsSection } from "./TagsSection";
-
-export const SETTINGS_SECTIONS = [
-  "perfil",
-  "categorias",
-  "reglas",
-  "etiquetas",
-  "cuentas",
-  "seguridad",
-  "sincronizacion",
-  "copias",
-  "apariencia",
-  "acerca",
-  "peligro",
-] as const;
-export type SettingsSectionKey = (typeof SETTINGS_SECTIONS)[number];
 
 const SECTIONS: Record<
   SettingsSectionKey,

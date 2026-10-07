@@ -5,10 +5,8 @@ import { PageHeader, SegmentedControl } from "@/ui";
 
 import { BudgetsTab } from "./BudgetsTab";
 import { GoalsTab } from "./GoalsTab";
+import type { PlanTab } from "./params";
 import { RecurringTab } from "./RecurringTab";
-
-export const PLAN_TABS = ["presupuestos", "metas", "recurrentes"] as const;
-export type PlanTab = (typeof PLAN_TABS)[number];
 
 const TAB_OPTIONS = [
   { value: "presupuestos", label: "Presupuestos" },

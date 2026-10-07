@@ -1,6 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 4173;
+// Sin los navegadores de Playwright descargados se puede usar el del sistema:
+// PW_CHANNEL=msedge (o chrome) pnpm test:e2e
+const channel = process.env["PW_CHANNEL"];
 
 export default defineConfig({
   testDir: "./e2e",
@@ -17,6 +20,7 @@ export default defineConfig({
     timezoneId: "Europe/Madrid",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    ...(channel ? { channel } : {}),
   },
   projects: [
     {
@@ -31,7 +35,9 @@ export default defineConfig({
   ],
   webServer: {
     command: "pnpm build && pnpm preview",
-    port: PORT,
+    // Por URL y no por puerto: Vite escucha en `localhost`, que en Windows puede
+    // ser solo IPv6, y la comprobación por puerto mira 127.0.0.1.
+    url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env["CI"],
     timeout: 180_000,
   },

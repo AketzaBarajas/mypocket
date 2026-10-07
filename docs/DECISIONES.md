@@ -240,3 +240,41 @@ Restaurar en un perfil limpio: bienvenida → «Restaurar con mi frase» → Aju
 - El tema se aplica al instante en el dispositivo y además se guarda como ajuste sincronizado.
 - El aviso «Copia de seguridad pendiente» de Inicio solo aparece si esta compilación tiene ID de
   cliente de Google, hay conexión y hay datos que copiar.
+
+## 6. Pulido final (fase 9)
+
+### 6.1 Presupuesto de JS inicial
+
+El build inicial pesaba 393 kB en gzip (presupuesto: 350 kB). Dos causas, las dos corregidas:
+
+- Las rutas `/analisis`, `/plan` y `/ajustes` importaban una constante desde el mismo módulo que
+  su pantalla para validar los parámetros de búsqueda, y con ella se colaba la pantalla entera en
+  el bundle inicial. Las constantes viven ahora en módulos aparte (`params.ts`, `sections.ts`).
+- Las gráficas se exportaban desde el barril `@/ui`, así que visx viajaba con la pantalla de
+  bloqueo. Ahora se importan desde `@/ui/charts`.
+
+Resultado: 311,5 kB. `pnpm check:bundle` lo comprueba tras cada build sumando lo que precarga
+`index.html`.
+
+### 6.2 Iconos
+
+`pnpm icons` rasteriza el logo con el navegador de Playwright (sin dependencias nuevas) y deja
+cuatro PNG en `public/`: 192 y 512 con esquinas redondeadas, el enmascarable a sangre con el logo
+al 70 % (zona segura) y el de Apple, también a sangre.
+
+### 6.3 Aviso de actualización
+
+`UpdatePrompt` registra el service worker con `registerType: "prompt"`: una versión nueva espera
+hasta que se pulsa «Actualizar». No se recarga sola para no perder un apunte a medias.
+
+### 6.4 Tests de extremo a extremo
+
+- Corren contra el build de producción. La app arranca bloqueada tras cualquier recarga, así que
+  los tests navegan por el historial (`go`) en lugar de recargar, salvo cuando el bloqueo es justo
+  lo que se prueba.
+- No hay passkey en e2e: el autenticador virtual de Chromium no da PRF. El desbloqueo se prueba con
+  PIN y la envoltura por PRF, en los tests unitarios de `src/security`.
+- El servidor de pruebas se comprueba por URL y no por puerto: Vite escucha en `localhost`, que en
+  Windows puede resolverse solo a IPv6.
+- Lo que no se puede probar sin una cuenta de Google, un iPhone o dos dispositivos está en
+  `docs/INFORME.md`, marcado como pendiente.

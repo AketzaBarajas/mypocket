@@ -26,8 +26,8 @@ import {
   Money,
   Notice,
   PageHeader,
-  Sparkline,
 } from "@/ui";
+import { Sparkline } from "@/ui/charts";
 
 import { AccountFormSheet, ValuationSheet } from "./AccountSheets";
 

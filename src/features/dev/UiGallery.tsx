@@ -8,14 +8,10 @@ import { sideItems, tabItems } from "@/features/shell/nav";
 import {
   AnimatedNumber,
   applyKeypadKey,
-  AreaLineChart,
   Badge,
-  BarCompare,
   BottomSheet,
   Button,
   Card,
-  CashflowBars,
-  CashflowLegend,
   Checkbox,
   Chip,
   Combobox,
@@ -26,7 +22,6 @@ import {
   Fab,
   Field,
   getStoredTheme,
-  HBarList,
   HeroCard,
   IconButton,
   Input,
@@ -46,7 +41,6 @@ import {
   Sidebar,
   Skeleton,
   SkeletonGroup,
-  Sparkline,
   StatTile,
   SwipeRow,
   Switch,
@@ -58,6 +52,14 @@ import {
   TransactionRow,
   type ThemePreference,
 } from "@/ui";
+import {
+  AreaLineChart,
+  BarCompare,
+  CashflowBars,
+  CashflowLegend,
+  HBarList,
+  Sparkline,
+} from "@/ui/charts";
 
 const THEME_LABELS: Record<ThemePreference, string> = {
   system: "Sistema",

@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { isYearMonth } from "@/domain/dates";
 import type { YearMonth } from "@/domain/types";
-import { PLAN_TABS, PlanPage } from "@/features/plan/PlanPage";
+import { PLAN_TABS } from "@/features/plan/params";
+import { PlanPage } from "@/features/plan/PlanPage";
 import { RouteError } from "@/features/shell/RouteError";
 
 const planSearch = z.object({
@@ -30,7 +31,9 @@ function PlanRoute() {
       onTabChange={(pestana) =>
         void navigate({ search: (prev) => ({ ...prev, pestana }), replace: true })
       }
-      onMonthChange={(mes) => void navigate({ search: (prev) => ({ ...prev, mes }), replace: true })}
+      onMonthChange={(mes) =>
+        void navigate({ search: (prev) => ({ ...prev, mes }), replace: true })
+      }
     />
   );
 }

@@ -25,24 +25,18 @@ import { RangeTabs } from "@/features/shared/RangeTabs";
 import { useToday } from "@/features/shell/useToday";
 import {
   AnimatedNumber,
-  AreaLineChart,
-  BarCompare,
-  type BarCompareItem,
   Button,
   Card,
   cn,
   EmptyState,
-  HBarList,
   HeroCard,
   Money,
   PageHeader,
   SegmentedControl,
 } from "@/ui";
+import { AreaLineChart, BarCompare, type BarCompareItem, HBarList } from "@/ui/charts";
 
-export const ANALYSIS_TABS = ["patrimonio", "categorias", "comparar", "etiquetas"] as const;
-export type AnalysisTab = (typeof ANALYSIS_TABS)[number];
-export const PERIODS = ["mes", "ano"] as const;
-export type Period = (typeof PERIODS)[number];
+import type { AnalysisTab, Period } from "./params";
 
 const TAB_OPTIONS = [
   { value: "patrimonio", label: "Patrimonio" },
@@ -68,24 +62,39 @@ const Metrics = ({ month }: { readonly month: YearMonth }) => {
   return (
     <div className="grid grid-cols-2 gap-3">
       <Card className="flex min-w-0 flex-col gap-1">
-        <h2 className="text-caption text-fg-2 truncate">Tasa de ahorro · {formatMonthName(month)}</h2>
-        <span className={cn("num text-h1", rate === null ? "text-fg-2" : rate < 0 ? "text-danger" : "text-fg")}>
+        <h2 className="truncate text-caption text-fg-2">
+          Tasa de ahorro · {formatMonthName(month)}
+        </h2>
+        <span
+          className={cn(
+            "num text-h1",
+            rate === null ? "text-fg-2" : rate < 0 ? "text-danger" : "text-fg",
+          )}
+        >
           {rate === null ? "—" : formatPercent(rate)}
         </span>
-        <p className={cn("text-caption", rate === null ? "text-fg-2" : onTarget ? "text-accent" : "text-fg-2")}>
+        <p
+          className={cn(
+            "text-caption",
+            rate === null ? "text-fg-2" : onTarget ? "text-accent" : "text-fg-2",
+          )}
+        >
           {rate === null
             ? "Sin ingresos en el mes"
             : `Objetivo ${formatPercent(SAVINGS_RATE_TARGET)} ${onTarget ? "✓" : "✗"}`}
         </p>
       </Card>
       <Card className="flex min-w-0 flex-col gap-1">
-        <h2 className="text-caption text-fg-2 truncate">Meses de colchón</h2>
+        <h2 className="truncate text-caption text-fg-2">Meses de colchón</h2>
         <span className={cn("num text-h1", buffer.months === null ? "text-fg-2" : "text-fg")}>
           {buffer.months === null
             ? "—"
-            : buffer.months.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            : buffer.months.toLocaleString("es-ES", {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}
         </span>
-        <p className="text-caption text-fg-2 truncate">Líquido: {formatMoney(buffer.liquid)}</p>
+        <p className="truncate text-caption text-fg-2">Líquido: {formatMoney(buffer.liquid)}</p>
       </Card>
     </div>
   );
@@ -107,10 +116,10 @@ const NetWorthTab = () => {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-caption text-fg-2">Patrimonio neto</h2>
-          <AnimatedNumber value={total} dimFraction className="text-display text-fg block" />
+          <AnimatedNumber value={total} dimFraction className="block text-display text-fg" />
           <p
             className={cn(
-              "num text-caption mt-1",
+              "mt-1 num text-caption",
               change.amount === 0 ? "text-fg-2" : change.amount > 0 ? "text-accent" : "text-danger",
             )}
           >
@@ -167,7 +176,13 @@ const PeriodControls = ({
 
 /* ───────────────────────── Categorías ───────────────────────── */
 
-const CategoriesTab = ({ period, month }: { readonly period: Period; readonly month: YearMonth }) => {
+const CategoriesTab = ({
+  period,
+  month,
+}: {
+  readonly period: Period;
+  readonly month: YearMonth;
+}) => {
   const ledger = useLedger();
   const [openId, setOpenId] = useState<string | null>(null);
   const range = period === "ano" ? yearRangeOf(yearOf(month)) : monthRangeOf(month);
@@ -214,7 +229,7 @@ const CategoriesTab = ({ period, month }: { readonly period: Period; readonly mo
             Todas
           </Button>
         )}
-        <h2 className="text-title text-fg min-w-0 flex-1 truncate">
+        <h2 className="min-w-0 flex-1 truncate text-title text-fg">
           {drill ? `${parent.emoji} ${parent.name}` : "Gasto por categoría"}
         </h2>
         <Money value={total} className="text-title text-fg" />
@@ -223,7 +238,11 @@ const CategoriesTab = ({ period, month }: { readonly period: Period; readonly mo
         <EmptyState compact icon="📊" title="Sin gastos en este periodo" />
       ) : (
         <HBarList
-          ariaLabel={drill ? `Gasto de ${parent.name} por subcategoría` : "Gasto por categoría, de mayor a menor"}
+          ariaLabel={
+            drill
+              ? `Gasto de ${parent.name} por subcategoría`
+              : "Gasto por categoría, de mayor a menor"
+          }
           items={items}
           total={total}
           onSelect={drill ? undefined : (id) => (canDrill(id) ? setOpenId(id) : undefined)}
@@ -253,19 +272,18 @@ const CompareTab = ({ period, month }: { readonly period: Period; readonly month
     [ledger.transactions, ledger.index, period, month, year],
   );
   const currentLabel = period === "ano" ? String(year) : formatMonthYear(month);
-  const previousLabel = period === "ano" ? String(year - 1) : formatMonthYear(addMonthsYm(month, -1));
+  const previousLabel =
+    period === "ano" ? String(year - 1) : formatMonthYear(addMonthsYm(month, -1));
 
-  const items = comparison.categories.map(
-    (item): BarCompareItem => ({
-      id: item.category.id,
-      emoji: item.category.emoji,
-      label: item.category.name,
-      current: item.current,
-      previous: item.previous,
-      delta: deltaText(item),
-      trend: item.amount > 0 ? "up" : item.amount < 0 ? "down" : "flat",
-    }),
-  );
+  const items = comparison.categories.map((item): BarCompareItem => ({
+    id: item.category.id,
+    emoji: item.category.emoji,
+    label: item.category.name,
+    current: item.current,
+    previous: item.previous,
+    delta: deltaText(item),
+    trend: item.amount > 0 ? "up" : item.amount < 0 ? "down" : "flat",
+  }));
   const total = comparison.total;
 
   return (
@@ -323,18 +341,18 @@ const TagsTab = () => {
   }
 
   return (
-    <Card padding="none" className="divide-border divide-y overflow-hidden">
+    <Card padding="none" className="divide-y divide-border overflow-hidden">
       {costs.map((cost) => (
         <Link
           key={cost.tag.id}
           to="/movimientos"
           search={{ etiquetas: [cost.tag.id] }}
-          className="hover:bg-chip flex min-h-15 items-center gap-3 px-4 py-2.5 transition-colors"
+          className="flex min-h-15 items-center gap-3 px-4 py-2.5 transition-colors hover:bg-chip"
         >
           <ColorDot color={cost.tag.color} className="size-2.5" />
           <div className="min-w-0 flex-1">
-            <div className="text-body text-fg truncate">#{cost.tag.name}</div>
-            <div className="text-caption text-fg-2 truncate">
+            <div className="truncate text-body text-fg">#{cost.tag.name}</div>
+            <div className="truncate text-caption text-fg-2">
               {cost.count === 0
                 ? "Sin gastos"
                 : `${cost.count} ${cost.count === 1 ? "movimiento" : "movimientos"}${
@@ -346,7 +364,7 @@ const TagsTab = () => {
                   }`}
             </div>
           </div>
-          <Money value={cost.total} className="text-body text-fg font-medium" />
+          <Money value={cost.total} className="text-body font-medium text-fg" />
         </Link>
       ))}
     </Card>
@@ -395,7 +413,9 @@ export const AnalysisPage = ({ tab, period, month, onChange }: AnalysisPageProps
           />
         )}
         {tab === "patrimonio" && <NetWorthTab />}
-        {tab === "categorias" && <CategoriesTab key={`${period}-${selected}`} period={period} month={selected} />}
+        {tab === "categorias" && (
+          <CategoriesTab key={`${period}-${selected}`} period={period} month={selected} />
+        )}
         {tab === "comparar" && <CompareTab period={period} month={selected} />}
         {tab === "etiquetas" && <TagsTab />}
       </div>

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { RouteError, RouteNotFound } from "@/features/shell/RouteError";
 import { SessionGate } from "@/features/shell/SessionGate";
+import { UpdatePrompt } from "@/features/shell/UpdatePrompt";
 import { ToastViewport, TooltipProvider } from "@/ui";
 
 /** Tipos de alta rápida que se pueden abrir con `?nuevo=` desde cualquier ruta. */
@@ -27,6 +28,7 @@ function RootLayout() {
         <Outlet />
       </SessionGate>
       <ToastViewport />
+      <UpdatePrompt />
     </TooltipProvider>
   );
 }

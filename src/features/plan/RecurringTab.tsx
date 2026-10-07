@@ -48,12 +48,19 @@ const isoDate = z.custom<IsoDate>((value) => typeof value === "string" && isIsoD
 const recurrenceSchema = z.object({
   name: z.string().trim().min(1, "Ponle un nombre.").max(60),
   type: z.enum(TRANSACTION_TYPES),
-  amount: z.number({ error: "Escribe un importe mayor que cero." }).int().positive("Escribe un importe mayor que cero."),
+  amount: z
+    .number({ error: "Escribe un importe mayor que cero." })
+    .int()
+    .positive("Escribe un importe mayor que cero."),
   accountId: z.string().min(1, "Elige una cuenta."),
   toAccountId: z.string().nullable(),
   categoryId: z.string().nullable(),
   frequency: z.enum(FREQUENCIES),
-  interval: z.number({ error: "Indica cada cuánto se repite." }).int().min(1, "El mínimo es 1.").max(99),
+  interval: z
+    .number({ error: "Indica cada cuánto se repite." })
+    .int()
+    .min(1, "El mínimo es 1.")
+    .max(99),
   anchorDate: isoDate,
   endDate: isoDate.nullable(),
   leadDays: z.number({ error: "Indica los días de aviso." }).int().min(0).max(60),
@@ -130,7 +137,9 @@ const RecurrenceForm = ({
         return;
       }
       if (values.toAccountId === values.accountId) {
-        setError("toAccountId", { message: "La cuenta de destino debe ser distinta de la de origen." });
+        setError("toAccountId", {
+          message: "La cuenta de destino debe ser distinta de la de origen.",
+        });
         return;
       }
     } else if (values.categoryId === null || !isLeaf(index, values.categoryId)) {
@@ -184,7 +193,9 @@ const RecurrenceForm = ({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Nombre" error={errors.name?.message}>
-          {(aria) => <Input maxLength={60} placeholder="Alquiler" {...register("name")} {...aria} />}
+          {(aria) => (
+            <Input maxLength={60} placeholder="Alquiler" {...register("name")} {...aria} />
+          )}
         </Field>
         <Field label="Importe" error={errors.amount?.message}>
           {(aria) => (
@@ -205,7 +216,10 @@ const RecurrenceForm = ({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label={type === "transfer" ? "Cuenta de origen" : "Cuenta"} error={errors.accountId?.message}>
+        <Field
+          label={type === "transfer" ? "Cuenta de origen" : "Cuenta"}
+          error={errors.accountId?.message}
+        >
           {(aria) => (
             <Controller
               control={control}
@@ -228,7 +242,12 @@ const RecurrenceForm = ({
                 control={control}
                 name="toAccountId"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange} options={accountOptions} {...aria} />
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    options={accountOptions}
+                    {...aria}
+                  />
                 )}
               />
             )}
@@ -240,7 +259,12 @@ const RecurrenceForm = ({
                 control={control}
                 name="categoryId"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange} groups={categoryGroups} {...aria} />
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    groups={categoryGroups}
+                    {...aria}
+                  />
                 )}
               />
             )}
@@ -334,7 +358,7 @@ const RecurrenceForm = ({
         )}
       </Field>
 
-      <div className="border-border divide-border divide-y rounded-[12px] border">
+      <div className="divide-y divide-border rounded-[12px] border border-border">
         <Controller
           control={control}
           name="isSubscription"
@@ -342,9 +366,15 @@ const RecurrenceForm = ({
             <div className="flex items-center gap-3 p-3">
               <div className="min-w-0 flex-1">
                 <div className="text-body text-fg">Es una suscripción</div>
-                <div className="text-caption text-fg-2">Suma en el total mensual de suscripciones.</div>
+                <div className="text-caption text-fg-2">
+                  Suma en el total mensual de suscripciones.
+                </div>
               </div>
-              <Switch checked={field.value} onCheckedChange={field.onChange} label="Es una suscripción" />
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                label="Es una suscripción"
+              />
             </div>
           )}
         />
@@ -407,23 +437,26 @@ const RecurrenceRow = ({
 }) => {
   const { index } = useLedger();
   const repo = useRepo();
-  const category = recurrence.categoryId === null ? undefined : index.byId.get(recurrence.categoryId);
+  const category =
+    recurrence.categoryId === null ? undefined : index.byId.get(recurrence.categoryId);
   const emoji = recurrence.type === "transfer" ? TRANSFER_EMOJI : (category?.emoji ?? "🔁");
 
   return (
-    <div className={cn("flex min-h-15 items-center gap-1 pr-2", !recurrence.active && "opacity-60")}>
+    <div
+      className={cn("flex min-h-15 items-center gap-1 pr-2", !recurrence.active && "opacity-60")}
+    >
       <button
         type="button"
         onClick={onEdit}
-        className="hover:bg-chip flex min-w-0 flex-1 items-center gap-3 px-4 py-2.5 text-left transition-colors"
+        className="flex min-w-0 flex-1 items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-chip"
       >
         <EmojiChip emoji={emoji} />
         <span className="min-w-0 flex-1">
           <span className="flex min-w-0 items-center gap-2">
-            <span className="text-body text-fg truncate">{recurrence.name}</span>
+            <span className="truncate text-body text-fg">{recurrence.name}</span>
             {!recurrence.active && <Badge>En pausa</Badge>}
           </span>
-          <span className="text-caption text-fg-2 block truncate">
+          <span className="block truncate text-caption text-fg-2">
             {describeFrequency(recurrence.frequency, recurrence.interval)} · próximo{" "}
             {formatShortDate(recurrence.nextDueDate)}
           </span>
@@ -466,7 +499,7 @@ export const RecurringTab = () => {
           <h2 className="text-title text-fg">{title}</h2>
           {aside}
         </div>
-        <Card padding="none" className="divide-border divide-y overflow-hidden">
+        <Card padding="none" className="divide-y divide-border overflow-hidden">
           {items.map((recurrence) => (
             <RecurrenceRow
               key={recurrence.id}
@@ -507,7 +540,7 @@ export const RecurringTab = () => {
             "Suscripciones",
             subscriptions,
             <span className="text-caption text-fg-2">
-              <Money value={monthlyTotal} className="text-fg font-semibold" /> al mes
+              <Money value={monthlyTotal} className="font-semibold text-fg" /> al mes
             </span>,
           )}
           {section("Fijos", fixed)}
@@ -515,12 +548,15 @@ export const RecurringTab = () => {
       )}
 
       {subscriptions.length > 0 && (
-        <p className="text-caption text-fg-2 px-1">
+        <p className="px-1 text-caption text-fg-2">
           El total mensual reparte las anuales entre 12 y convierte las semanales (× 52 / 12). Por
           ejemplo, una anual de {formatMoney(cents(12000), { whole: true })} cuenta como{" "}
-          {formatMoney(monthlyEquivalent({ amount: cents(12000), frequency: "yearly", interval: 1 }), {
-            whole: true,
-          })}{" "}
+          {formatMoney(
+            monthlyEquivalent({ amount: cents(12000), frequency: "yearly", interval: 1 }),
+            {
+              whole: true,
+            },
+          )}{" "}
           al mes.
         </p>
       )}

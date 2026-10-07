@@ -17,7 +17,14 @@ export interface MonthSwitcherProps {
 }
 
 /** Selector de mes: ‹ Octubre 2026 › */
-export const MonthSwitcher = ({ value, onChange, max, label, step = 1, className }: MonthSwitcherProps) => {
+export const MonthSwitcher = ({
+  value,
+  onChange,
+  max,
+  label,
+  step = 1,
+  className,
+}: MonthSwitcherProps) => {
   const next = addMonthsYm(value, step);
   const text = label ?? formatMonthYear(value);
   return (
@@ -29,7 +36,7 @@ export const MonthSwitcher = ({ value, onChange, max, label, step = 1, className
       >
         <ChevronLeft aria-hidden="true" size={18} strokeWidth={1.75} />
       </IconButton>
-      <div aria-live="polite" className="text-title text-fg min-w-36 px-2 text-center">
+      <div aria-live="polite" className="min-w-36 px-2 text-center text-title text-fg">
         {text}
       </div>
       <IconButton

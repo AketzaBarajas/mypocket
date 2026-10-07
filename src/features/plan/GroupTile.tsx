@@ -16,7 +16,10 @@ export const STATE_TEXT: Record<BudgetState, string> = {
 };
 
 /** Texto "gastado / presupuestado" de un grupo o categoría. */
-export const spentOfBudget = (spent: Parameters<typeof formatMoney>[0], budget: GroupSummary["budget"]) =>
+export const spentOfBudget = (
+  spent: Parameters<typeof formatMoney>[0],
+  budget: GroupSummary["budget"],
+) =>
   budget === null
     ? `${formatMoney(spent, { whole: true })} · sin presupuesto`
     : `${formatMoney(spent, { whole: true })} / ${formatMoney(budget, { whole: true })}`;
@@ -50,12 +53,17 @@ export const GroupTile = ({ summary, className }: GroupTileProps) => {
     >
       <div className="flex min-w-0 items-center gap-2">
         <span aria-hidden="true">{emoji}</span>
-        <h3 className="text-caption text-fg-2 min-w-0 flex-1 truncate">{name}</h3>
-        <span className={cn("num text-caption shrink-0", isSavings ? "text-fg-2" : STATE_TEXT[summary.status.state])}>
+        <h3 className="min-w-0 flex-1 truncate text-caption text-fg-2">{name}</h3>
+        <span
+          className={cn(
+            "shrink-0 num text-caption",
+            isSavings ? "text-fg-2" : STATE_TEXT[summary.status.state],
+          )}
+        >
           {ratio === null ? "—" : formatPercent(ratio)}
         </span>
       </div>
-      <Money value={summary.spent} className="text-h2 text-fg block truncate" />
+      <Money value={summary.spent} className="block truncate text-h2 text-fg" />
       <ProgressBar
         value={ratio ?? 0}
         state={state}
@@ -64,7 +72,7 @@ export const GroupTile = ({ summary, className }: GroupTileProps) => {
           summary.budget === null ? ", sin presupuesto" : ` de ${formatMoney(summary.budget)}`
         }`}
       />
-      <p className="text-caption text-fg-2 truncate">
+      <p className="truncate text-caption text-fg-2">
         {summary.budget === null
           ? isSavings
             ? "Sin objetivo"
@@ -73,7 +81,7 @@ export const GroupTile = ({ summary, className }: GroupTileProps) => {
         {summary.ideal !== null && ` · ideal ${formatMoney(summary.ideal, { whole: true })}`}
       </p>
       {!isSavings && summary.status.state === "danger" && (
-        <p className="text-caption text-danger truncate">
+        <p className="truncate text-caption text-danger">
           Te has pasado {formatMoney(summary.status.excess)}
         </p>
       )}

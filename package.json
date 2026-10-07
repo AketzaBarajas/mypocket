@@ -22,6 +22,7 @@
     "test:e2e": "playwright test",
     "seed:demo": "cross-env VITE_DEMO_PROFILE=1 vite --mode demo",
     "icons": "node scripts/generate-icons.mjs",
+    "check:bundle": "node scripts/check-bundle.mjs",
     "clean": "rimraf dist coverage .vite playwright-report test-results"
   },
   "dependencies": {

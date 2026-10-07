@@ -23,7 +23,6 @@ import { SimpleTransactionList } from "@/features/transactions/TransactionList";
 import { useTransactionActions } from "@/features/transactions/useTransactionActions";
 import {
   AnimatedNumber,
-  AreaLineChart,
   Badge,
   Button,
   Card,
@@ -36,6 +35,7 @@ import {
   PageHeader,
   toast,
 } from "@/ui";
+import { AreaLineChart } from "@/ui/charts";
 
 import { AccountFormSheet, CollectSheet, ValuationSheet } from "./AccountSheets";
 

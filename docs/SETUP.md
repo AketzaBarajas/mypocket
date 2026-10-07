@@ -52,6 +52,24 @@ copia en Google Drive.
 `localhost` cuenta como contexto seguro, así que en el escritorio puedes probar el PIN y, si el
 navegador y Windows Hello lo permiten, la passkey.
 
+Para ver la app con datos sin pasar por la bienvenida, `pnpm seed:demo` arranca un perfil demo
+aislado (otra base de datos, sin PIN) con doce meses de movimientos ficticios.
+
+### Tests de extremo a extremo
+
+```powershell
+pnpm exec playwright install chromium   # solo la primera vez
+pnpm test:e2e
+```
+
+`pnpm test:e2e` compila la app, la sirve en <http://localhost:4173> y recorre los flujos
+principales en móvil y escritorio. Si prefieres no descargar el navegador de Playwright, usa el
+Edge o el Chrome del sistema:
+
+```powershell
+$env:PW_CHANNEL = "msedge"; pnpm test:e2e
+```
+
 ## 4. Copias en Google Drive (opcional)
 
 1. Entra en [Google Cloud Console](https://console.cloud.google.com/) y crea un proyecto nuevo
