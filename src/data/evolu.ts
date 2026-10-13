@@ -15,8 +15,7 @@ import { Schema } from "./schema";
 /** Instancia de Evolu tipada con el schema de MyPocket. */
 export type Db = Evolu<typeof Schema>;
 
-/** Relay gratuito oficial de Evolu (valor por defecto de `transports`). */
-export const DEFAULT_RELAY_URL = "wss://free.evoluhq.com";
+export { DEFAULT_RELAY_URL } from "./relay";
 
 /**
  * Dependencias de plataforma compartidas por todas las instancias. Se crean

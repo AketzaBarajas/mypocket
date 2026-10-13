@@ -1,14 +1,8 @@
 import { create } from "zustand";
 
-import {
-  closeDb,
-  type Db,
-  DEFAULT_RELAY_URL,
-  generateOwnerSecret,
-  mnemonicToSecret,
-  openDb,
-  secretToMnemonic,
-} from "@/data";
+import type { Db } from "@/data/evolu";
+import { generateOwnerSecret, mnemonicToSecret, secretToMnemonic } from "@/data/owner";
+import { DEFAULT_RELAY_URL } from "@/data/relay";
 
 import { type Bytes, UnsealError, wipe } from "./crypto";
 import { createKeystoreStore, type Keystore, newKeystore } from "./keystore";
@@ -112,6 +106,8 @@ const takeWipeFlag = (): boolean => {
 };
 
 const enter = async (secret: Bytes, relayUrl: string | null, extra: Partial<SessionState>) => {
+  // Evolu pesa más de 100 kB: se descarga al desbloquear, no en el primer pintado.
+  const { openDb } = await import("@/data/evolu");
   const db = await openDb({
     ownerSecret: new Uint8Array(secret),
     relayUrl,
@@ -123,8 +119,13 @@ const enter = async (secret: Bytes, relayUrl: string | null, extra: Partial<Sess
   void navigator.storage.persist().catch(() => false);
 };
 
+const closeDbLazy = async (db: Db): Promise<void> => {
+  const { closeDb } = await import("@/data/evolu");
+  await closeDb(db).catch(() => undefined);
+};
+
 /** Arranque: resuelve un borrado pendiente y decide entre bienvenida y bloqueo. */
-export const bootSession = async (): Promise<void> => {
+const runBoot = async (): Promise<void> => {
   if (useSession.getState().status !== "booting") return;
 
   if (takeWipeFlag()) await clearOpfs();
@@ -145,6 +146,16 @@ export const bootSession = async (): Promise<void> => {
   useSession.setState({ status: "locked", passkeySupport, ...fromKeystore(stored) });
 };
 
+let bootPromise: Promise<void> | null = null;
+
+/** Arranque único: las llamadas simultáneas (puerta de sesión y router) comparten la misma. */
+export const bootSession = (): Promise<void> => {
+  bootPromise ??= runBoot().finally(() => {
+    bootPromise = null;
+  });
+  return bootPromise;
+};
+
 /** Bloquea: cierra Evolu y descarta la clave y los datos de memoria. */
 export const lockSession = async (returnTo: string | null = null): Promise<void> => {
   const { db, status } = useSession.getState();
@@ -152,7 +163,7 @@ export const lockSession = async (returnTo: string | null = null): Promise<void>
   useSession.setState({ status: "locked", db: null, returnTo });
   wipe(ownerSecret);
   ownerSecret = null;
-  if (db) await closeDb(db).catch(() => undefined);
+  if (db) await closeDbLazy(db);
 };
 
 export const setReturnTo = (returnTo: string | null): void => {
@@ -381,7 +392,7 @@ export const setRelayUrl = async (url: string): Promise<void> => {
   await keystore.update((current) => ({ ...current, relayUrl }));
   const { db } = useSession.getState();
   useSession.setState({ db: null, status: "booting", relayUrl });
-  if (db) await closeDb(db).catch(() => undefined);
+  if (db) await closeDbLazy(db);
   await enter(secret, relayUrl, { relayUrl });
 };
 
@@ -396,7 +407,7 @@ export const wipeDevice = async (): Promise<void> => {
   useSession.setState({ status: "booting", db: null });
   wipe(ownerSecret);
   ownerSecret = null;
-  if (db) await closeDb(db).catch(() => undefined);
+  if (db) await closeDbLazy(db);
   await keystore.destroy();
   try {
     window.localStorage.setItem(WIPE_FLAG, "1");

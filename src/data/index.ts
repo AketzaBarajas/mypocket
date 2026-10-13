@@ -1,6 +1,7 @@
 // API pública de la capa de datos. La interfaz importa solo desde aquí: Evolu
 // queda aislado dentro de src/data y es reemplazable.
-export { closeDb, type Db, DEFAULT_RELAY_URL, openDb, type OpenDbOptions } from "./evolu";
+export { closeDb, type Db, openDb, type OpenDbOptions } from "./evolu";
+export { DEFAULT_RELAY_URL } from "./relay";
 export * from "./hooks";
 export {
   generateOwnerSecret,
