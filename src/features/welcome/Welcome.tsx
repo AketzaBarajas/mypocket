@@ -124,10 +124,11 @@ export const Welcome = ({ connectDrive }: WelcomeProps) => {
       setSecret(null);
       if (mode === "create") setStep("accounts");
       // Al restaurar, la sesión ya está completa y el shell redirige a Inicio.
-    } catch {
+    } catch (error) {
+      const detail =
+        error instanceof Error ? ` (${error.name}: ${error.message.slice(0, 120)})` : "";
       toast({
-        message:
-          "No se pudo configurar el dispositivo. Comprueba que el navegador no está en modo privado.",
+        message: `No se pudo configurar el dispositivo. Comprueba que el navegador no está en modo privado.${detail}`,
         tone: "danger",
       });
     } finally {
