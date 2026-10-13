@@ -1,3 +1,4 @@
+import "./polyfills";
 import "@/ui/styles.css";
 
 import { createRouter, RouterProvider } from "@tanstack/react-router";
