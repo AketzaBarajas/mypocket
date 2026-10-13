@@ -16,3 +16,6 @@ Thumbs.db
 *.log
 .claude/settings.local.json
 .playwright-mcp
+
+# Local Lighthouse reports
+*.report.html
