@@ -2,6 +2,9 @@
 
 A local-first, end-to-end encrypted personal finance app that runs entirely in the browser — no backend, no analytics, no bank APIs.
 
+[![CI](https://github.com/AketzaBarajas/mypocket/actions/workflows/ci.yml/badge.svg)](https://github.com/AketzaBarajas/mypocket/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **[Live app](https://mypocket-qzv.pages.dev)** · [Design decisions](docs/DECISIONES.md) · [Acceptance report](docs/INFORME.md)
 
 ![MyPocket dashboard showing net worth, budgets and cash flow](docs/screenshots/dashboard-desktop.png)
